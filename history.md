@@ -22,7 +22,7 @@ Lead Researcher finding a way to evade ban/kick system which is annoying and beg
 Due to the nature of Mindustry source code, it's easy to understand how the UUID system work.
 After some research we found that Mindustry relied on MAC address, so we use
 VPN and MAC Changer and manage to evade ban and hack, until we realize MAC Changer
- is too long to change the MAC address itself and disconnecting internet (The whole process take 1-2 minute)
+is too long to change the MAC address itself and disconnecting internet (The whole process take 1-2 minute)
 we found a way to modify code and build first modified grief client.
 ```
 
