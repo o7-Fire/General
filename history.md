@@ -13,8 +13,8 @@ disappeared from Discord and back 1 years later//Spending 1 years on Roblox
 10/14/2019: Nexity came online
 10/29/2019: Nexity and Sylvia found the o7 by setting an oil lake in an mindustry server to fire
 10/30/2019: Sylvia choose to use 'o7' as tag "[Fire o7]"
-//After that we do daily raid
 ```
+After all of that we do daily raid marking the first raiding season (incursion as we call).
 * First Evasion Client
 ```
 On November 2019:
