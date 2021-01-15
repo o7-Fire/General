@@ -1,0 +1,18 @@
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" id="svg585955" viewbox="0 0 1024 768" height="768px" width="1024px" version="1.1"> <metadata id="metadata585961"> 
+  <rdf:rdf> 
+   <cc:work rdf:about=""> 
+    <dc:format>
+     image/svg+xml
+    </dc:format> 
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type> 
+   </cc:work> 
+  </rdf:rdf> 
+ </metadata> <defs id="defs585959"></defs> <g id="logo-group"> 
+  <g id="title" style="font-style:normal;font-weight:300;font-size:72px;line-height:1;font-family:'Montserrat Light Alt1';font-variant-ligatures:none;text-align:center;text-anchor:middle" aria-label="VO7"> 
+   <path id="path585963" style="font-style: normal; font-weight: 300; font-size: 72px; line-height: 1; font-family: &quot;Montserrat Light Alt1&quot;; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(188, 185, 178);" d="m 486.00856,69.6 h -3.816 l -20.376,45.648 -20.376,-45.648 h -4.032 l 22.464,50.4 h 3.672 z" transform="translate(0 79.86296130476507) translate(252 218.17605372561547) scale(3.4111501972071196) translate(-437.40856 -69.6)"></path> 
+   <path id="path585965" style="font-style: normal; font-weight: 300; font-size: 72px; line-height: 1; font-family: &quot;Montserrat Light Alt1&quot;; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(148, 145, 138);" d="m 501.70569,117.048 c 3.96,2.232 8.424,3.312 13.392,3.312 4.896,0 9.36,-1.08 13.392,-3.312 3.96,-2.16 7.056,-5.256 9.36,-9.144 2.304,-3.888 3.456,-8.208 3.456,-13.104 0,-4.824 -1.152,-9.216 -3.456,-13.104 -2.304,-3.888 -5.4,-6.912 -9.36,-9.144 -4.032,-2.16 -8.496,-3.312 -13.392,-3.312 -4.968,0 -9.432,1.152 -13.392,3.384 -4.032,2.232 -7.128,5.256 -9.432,9.144 -2.304,3.888 -3.384,8.28 -3.384,13.032 0,4.824 1.08,9.144 3.384,13.032 2.304,3.888 5.4,6.984 9.432,9.216 z m 24.84,-2.952 c -3.456,1.944 -7.272,2.88 -11.448,2.88 -4.248,0 -8.064,-0.936 -11.52,-2.88 -3.456,-1.872 -6.12,-4.536 -8.064,-7.92 -2.016,-3.384 -2.952,-7.2 -2.952,-11.376 0,-4.176 0.936,-7.92 2.952,-11.304 1.944,-3.384 4.608,-6.048 8.064,-7.992 3.456,-1.872 7.272,-2.88 11.52,-2.88 4.176,0 7.992,1.008 11.448,2.88 3.384,1.944 6.048,4.608 8.064,7.992 1.944,3.384 2.952,7.128 2.952,11.304 0,4.176 -1.008,7.992 -2.952,11.376 -2.016,3.384 -4.68,6.048 -8.064,7.92 z" transform="translate(0 79.86296130476507) translate(437.8433173435665 216.94803965462097) scale(3.4111501972071196) translate(-488.88969 -69.24)"></path> 
+   <path id="path585967" style="font-style: normal; font-weight: 300; font-size: 72px; line-height: 1; font-family: &quot;Montserrat Light Alt1&quot;; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(148, 145, 138);" d="m 583.84981,69.6 h -36.144 v 12.96 h 3.6 v -9.648 h 28.296 L 558.14581,120 h 4.032 l 21.672,-47.808 z" transform="translate(0 79.86296130476507) translate(648.7073872721459 218.17605372561547) scale(3.4111501972071196) translate(-547.70581 -69.6)"></path> 
+  </g> 
+  <g id="tagline" style="font-style:normal;font-weight:400;font-size:32px;line-height:1;font-family:Montserrat;font-variant-ligatures:none;text-align:center;text-anchor:middle"></g> 
+ </g> 
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" id="svg53616" viewbox="0 0 1024 768" height="768px" width="1024px" version="1.1"> <metadata id="metadata53622"> 
+  <rdf:rdf> 
+   <cc:work rdf:about=""> 
+    <dc:format>
+     image/svg+xml
+    </dc:format> 
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type> 
+   </cc:work> 
+  </rdf:rdf> 
+ </metadata> <defs id="defs53620"></defs> <g id="logo-group"> 
+  <g id="title" style="font-style:normal;font-weight:400;font-size:72px;line-height:1;font-family:Teko;font-variant-ligatures:none;text-align:center;text-anchor:middle" aria-label="O7RAIL"> 
+   <path id="path53624" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(255, 255, 255);" d="m 450.99575,74.928 h 7.992 q 6.696,0 6.696,6.336 v 32.4 q 0,6.336 -6.696,6.336 h -7.992 q -6.768,0 -6.768,-6.336 v -32.4 q 0,-6.336 6.768,-6.336 z m 8.208,37.728 V 82.272 q 0,-1.296 -0.432,-1.656 -0.432,-0.432 -1.728,-0.432 h -4.176 q -1.296,0 -1.728,0.432 -0.36,0.36 -0.36,1.656 v 30.384 q 0,1.296 0.36,1.728 0.432,0.36 1.728,0.36 h 4.176 q 1.296,0 1.728,-0.36 0.432,-0.432 0.432,-1.728 z" transform="translate(0 79.09253935326404) translate(251.99999999999983 228.6416400244052) scale(3.384177343908889) translate(-444.22775 -74.928)"></path> 
+   <path id="path53626" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(255, 255, 255);" d="m 489.70137,74.928 v 4.032 l -12.096,41.04 h -6.62399 l 11.73599,-39.672 h -13.17599 v -5.4 z" transform="translate(0 79.09253935326404) translate(347.81834516981877 228.6416400244052) scale(3.384177343908889) translate(-469.54138 -74.928)"></path> 
+   <path id="path53628" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(110, 98, 73);" d="M 500.2865,101.784 V 120 h -6.48 V 74.928 h 14.76 q 6.696,0 6.696,6.336 v 14.112 q 0,5.472 -4.824,6.264 l 7.128,18.36 h -6.984 l -6.768,-18.216 z m 0,-21.6 V 96.6 h 6.336 q 1.296,0 1.728,-0.36 0.432,-0.432 0.432,-1.728 v -12.24 q 0,-1.296 -0.432,-1.656 -0.432,-0.432 -1.728,-0.432 z" transform="translate(0 79.09253935326404) translate(440.08834655277604 228.6416400244052) scale(3.384177343908889) translate(-493.8065 -74.928)"></path> 
+   <path id="path53630" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(110, 98, 73);" d="m 538.91337,120 -1.79999,-10.44 h -9.50401 L 525.95338,120 h -6.48 l 7.99199,-45.072 h 9.432 l 8.568,45.072 z m -10.51199,-15.696 h 7.84799 l -4.104,-23.76 z" transform="translate(0 79.09253935326404) translate(537.102152369331 228.6416400244052) scale(3.384177343908889) translate(-519.47338 -74.928)"></path> 
+   <path id="path53632" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(110, 98, 73);" d="m 550.6325,74.928 h 6.48 V 120 h -6.48 z" transform="translate(0 79.09253935326404) translate(652.702672361196 228.6416400244052) scale(3.384177343908889) translate(-550.6325 -74.928)"></path> 
+   <path id="path53634" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(110, 98, 73);" d="m 571.724,114.744 h 11.16 V 120 h -17.64 V 74.928 h 6.48 z" transform="translate(0 79.09253935326404) translate(712.3031116534473 228.6416400244052) scale(3.384177343908889) translate(-565.244 -74.928)"></path> 
+  </g> 
+  <g id="tagline" style="font-style:oblique;font-weight:normal;font-size:32px;line-height:1;font-family:'Fira Sans Condensed';font-variant-ligatures:none;text-align:center;text-anchor:middle"></g> 
+ </g> 
+</svg>

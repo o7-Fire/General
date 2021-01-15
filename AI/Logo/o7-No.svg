@@ -1,0 +1,19 @@
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" id="svg423921" viewbox="0 0 1024 768" height="768px" width="1024px" version="1.1"> <metadata id="metadata423927"> 
+  <rdf:rdf> 
+   <cc:work rdf:about=""> 
+    <dc:format>
+     image/svg+xml
+    </dc:format> 
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type> 
+   </cc:work> 
+  </rdf:rdf> 
+ </metadata> <defs id="defs423925"></defs> <g id="logo-group"> 
+  <g id="title" style="font-style:normal;font-weight:400;font-size:72px;line-height:1;font-family:Teko;font-variant-ligatures:none;text-align:center;text-anchor:middle" aria-label="o7No"> 
+   <path id="path423929" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(239, 141, 20);" d="m 469.61169,84.864 h 7.704 q 6.696,0 6.696,6.408 v 22.392 q 0,6.336 -6.696,6.336 h -7.704 q -6.624,0 -6.624,-6.336 V 91.272 q 0,-6.408 6.624,-6.408 z m 7.992,27.864 V 92.136 q 0,-1.296 -0.432,-1.728 -0.432,-0.432 -1.728,-0.432 h -3.96 q -1.296,0 -1.728,0.432 -0.36,0.432 -0.36,1.728 v 20.592 q 0,1.296 0.36,1.728 0.432,0.432 1.728,0.432 h 3.96 q 1.296,0 1.728,-0.432 0.432,-0.432 0.432,-1.728 z" transform="translate(0 -64.34622224089861) translate(251.99999999999994 387.16203936070366) scale(4.855887530174204) translate(-462.98769 -84.864)"></path> 
+   <path id="path423931" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(239, 141, 20);" d="m 507.34981,74.928 v 4.032 l -12.096,41.04 h -6.624 l 11.736,-39.672 h -13.176 v -5.4 z" transform="translate(0 -64.34622224089861) translate(384.09043530230247 338.91394086089275) scale(4.855887530174204) translate(-487.18981 -74.928)"></path> 
+   <path id="path423933" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(35, 33, 39);" d="m 527.51094,74.928 h 5.976 V 120 h -6.552 l -9.504,-32.544 V 120 h -5.976 V 74.928 h 6.84 l 9.216,31.608 z" transform="translate(0 -64.34622224089861) translate(516.486840077881 338.91394086089275) scale(4.855887530174204) translate(-511.45494 -74.928)"></path> 
+   <path id="path423935" style="font-style: normal; font-weight: 400; font-size: 72px; line-height: 1; font-family: Teko; font-variant-ligatures: none; text-align: center; text-anchor: middle; fill: rgb(35, 33, 39);" d="m 546.67419,84.864 h 7.704 q 6.696,0 6.696,6.408 v 22.392 q 0,6.336 -6.696,6.336 h -7.704 q -6.624,0 -6.624,-6.336 V 91.272 q 0,-6.408 6.624,-6.408 z m 7.992,27.864 V 92.136 q 0,-1.296 -0.432,-1.728 -0.432,-0.432 -1.728,-0.432 h -3.96 q -1.296,0 -1.728,0.432 -0.36,0.432 -0.36,1.728 v 20.592 q 0,1.296 0.36,1.728 0.432,0.432 1.728,0.432 h 3.96 q 1.296,0 1.728,-0.432 0.432,-0.432 0.432,-1.728 z" transform="translate(0 -64.34622224089861) translate(669.9098205656177 387.16203936070366) scale(4.855887530174204) translate(-540.05019 -84.864)"></path> 
+  </g> 
+  <g id="tagline" style="font-style:oblique;font-weight:normal;font-size:32px;line-height:1;font-family:'Fira Sans Condensed';font-variant-ligatures:none;text-align:center;text-anchor:middle"></g> 
+ </g> 
+</svg>
