@@ -2,7 +2,7 @@ import paramiko
 import random
 import requests
 
-host = "95.216.66.105"
+host = "127.0.0.1"
 port = 22
 usernames = requests.get("https://github.com/jeanphorn/wordlist/raw/master/usernames.txt")
 passwords = requests.get("https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt")
