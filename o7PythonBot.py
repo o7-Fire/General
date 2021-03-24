@@ -125,7 +125,6 @@ async def on_message(message):
             std: subprocess = None
             try:
                 print(message.content)
-                asyncio
                 if executor.startswith("pip"):
                     std = subprocess.run(str(message.content).split(" "), capture_output=True, text=True)
                 else:
