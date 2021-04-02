@@ -13,12 +13,7 @@ TOKEN = sys.argv[1]
 client = discord.Client()
 val = 0
 whitelisted = [343591759332245505,  # nexity
-               332394297536282634,  # ben
-               450360653094584340,  # Volas
-               394771663155101727,  # gary
-               102188661344321536, ]  # john
-# 788246385988337664,
-# 69347699700714706]
+               332394297536282634]  # ben
 blacklistInput = {"@everyone", "@here", "netsh", "zipbomb", "blacklistOutput.txt"}
 blacklistOutput = {"@everyone", "@here", "netsh", "zipbomb"}  # thing you dont want to share
 try:
