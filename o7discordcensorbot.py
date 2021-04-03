@@ -1,8 +1,4 @@
 import traceback
-
-import keep_alive
-
-keep_alive.keep_alive()
 import os
 import discord
 import unicodedata
@@ -34,8 +30,8 @@ except FileNotFoundError:
 
 print("VALUE OF ISSPAMALLOWED: " + str(isSpamAllowed))
 print("VALUE OF ISTEXTCENSORENABLED: " + str(isTextCensorEnabled))
-ml = MonkeyLearn(os.getenv('ML_TOKEN'))
-TOKEN = os.getenv('BOT_TOKEN')  # for now use glitch api since volas having problem
+ml = MonkeyLearn(os.getenv('ML_TOKEN')) #go train your own bot lol
+TOKEN = os.getenv('BOT_TOKEN')  # for now use glitch api since volas ha ving problem
 ##https://o7-api.glitch.me
 ##https://o7inc.ddns.net
 o7API = "https://o7-api.glitch.me"  # choose your api
