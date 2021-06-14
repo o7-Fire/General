@@ -1,3 +1,9 @@
-import subprocess, sys
+import threading
+
+def spam():
+ while True:
+  print("hello")
+
 while True:
-    subprocess.Popen([sys.executable, sys.argv[0]], creationflags=subprocess.CREATE_NEW_CONSOLE)
+ t = threading.Thread(target=spam)
+ t.start()
