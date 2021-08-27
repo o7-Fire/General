@@ -2,7 +2,7 @@ from selenium import webdriver
 import time
 
 emailprefix = "planecrazyarchive.tk"
-def createaccount(emailname, emailprefix, password):
+def createaccount(emailname, password):
 	driver = webdriver.Chrome()
 	driver.get("https://github.com/signup?user_email=" + emailname + "%40" + emailprefix + "&source=form-home-signup")
 	time.sleep(5)
