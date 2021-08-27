@@ -5,7 +5,7 @@ emailprefix = "planecrazyarchive.tk"
 def createaccount(emailname, password):
 	driver = webdriver.Chrome()
 	driver.get("https://github.com/signup?user_email=" + emailname + "%40" + emailprefix + "&source=form-home-signup")
-	time.sleep(5)
+	time.sleep(10)
 	emailbutton = driver.find_element_by_xpath('//*[@id="email-container"]/div[2]/button')
 	emailbutton.click()
 	time.sleep(1)
