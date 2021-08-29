@@ -1,4 +1,3 @@
-import os
 import discord
 
 TOKEN = ""
@@ -10,10 +9,10 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author.id == client.user.id and message.content == "bbpq":
-        async for content in message.channel.history(limit=None).map(lambda m: m.content):
-            if "discord.gg" in (content):
-                print(content)
-        print("finished")
+	if message.author.id == client.user.id and message.content == "bbpq":
+		async for content in message.channel.history(limit=None).map(lambda m: m.content):
+			if "discord.gg/" in (content):
+				print(f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}")
+		print("finished")
 
 client.run(TOKEN)
