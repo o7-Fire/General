@@ -27,7 +27,7 @@ async def on_ready():
 async def on_message(message):
   if message.content == "getinvite" and message.channel.id == 840041811384860709:
     async with aiohttp.ClientSession() as session:
-      webhook = Webhook.from_url('https://ptb.discord.com/api/webhooks/881709397854789633/fMwprdzqlM-prsE85yckZTmlC4XGIhQuEaU-u6JcjIviYkh6NGPqdwFhcTCw88Y-tTdF', adapter=AsyncWebhookAdapter(session))
+      webhook = Webhook.from_url('webhook_url', adapter=AsyncWebhookAdapter(session))
       r = requests.get("https://raw.githubusercontent.com/o7-Fire/General/master/idb.txt").text.split("\n")
       totalcount = 0
       totalmessage = ""
