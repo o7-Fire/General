@@ -1,3 +1,5 @@
+#dont be dumb like me, use it on an account that is phone verified or join one server every few minutes (if not your account gets phone locked)
+
 import discord
 from discord import Webhook, AsyncWebhookAdapter
 import aiohttp
