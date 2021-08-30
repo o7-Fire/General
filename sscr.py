@@ -40,32 +40,72 @@ async def on_message(message):
 		if message.content == "gaininvites":
 			totalinvitesgained = ""
 			print("got guild successfully")
-			for textchannel in getguildbyid(theserver).text_channels:
-				try:
-					async for content in textchannel.history(limit=None).map(lambda m: m.content):
-						if "discord.gg/" in (content):
-							totalinvitesgained = totalinvitesgained + (
-								f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
-				except:
-					afvuiwfuibwtuivw = 0
-			async with aiohttp.ClientSession() as session:
-				webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
-				await webhook.send("```" + totalinvitesgained + "```")
+			if len(getguildbyid(theserver).members) >= 1000:
+				for textchannel in getguildbyid(theserver).text_channels:
+					try:
+						async for content in textchannel.history(limit=None).map(lambda m: m.content):
+							if "discord.gg/" in (content):
+								totalinvitesgained = totalinvitesgained + (
+									f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
+					except:
+						afvuiwfuibwtuivw = 0
+					async with aiohttp.ClientSession() as session:
+						webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
+						n = 1900
+						flist = [totalinvitesgained[i:i + n] for i in range(0, len(totalinvitesgained), n)]
+						for below2000 in flist:
+							await webhook.send("```from: " + textchannel.name + "\n" + below2000 + "```")
+						totalinvitesgained = ""
+						
+			else:
+				for textchannel in getguildbyid(theserver).text_channels:
+					try:
+						async for content in textchannel.history(limit=None).map(lambda m: m.content):
+							if "discord.gg/" in (content):
+								totalinvitesgained = totalinvitesgained + (
+									f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
+					except:
+						afvuiwfuibwtuivw = 0
+				async with aiohttp.ClientSession() as session:
+					webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
+					n = 1900
+					flist = [totalinvitesgained[i:i + n] for i in range(0, len(totalinvitesgained), n)]
+					for below2000 in flist:
+						await webhook.send("```" + below2000 + "```")
 		else:
 			theinvite = int(message.content.split("gaininvites ")[1])
 			totalinvitesgained = ""
 			print("got guild successfully")
-			for textchannel in getguildbyid(theinvite).text_channels:
-				try:
-					async for content in textchannel.history(limit=None).map(lambda m: m.content):
-						if "discord.gg/" in (content):
-							totalinvitesgained = totalinvitesgained + (
-								f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
-				except:
-					afvuiwfuibwtuivw = 0
-			async with aiohttp.ClientSession() as session:
-				webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
-				await webhook.send("```" + totalinvitesgained + "```")
-
+			if len(getguildbyid(theinvite).members) >= 1000:
+				for textchannel in getguildbyid(theinvite).text_channels:
+					try:
+						async for content in textchannel.history(limit=None).map(lambda m: m.content):
+							if "discord.gg/" in (content):
+								totalinvitesgained = totalinvitesgained + (
+									f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
+					except:
+						afvuiwfuibwtuivw = 0
+					async with aiohttp.ClientSession() as session:
+						webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
+						n = 1900
+						flist = [totalinvitesgained[i:i + n] for i in range(0, len(totalinvitesgained), n)]
+						for below2000 in flist:
+							await webhook.send("```from: \n" + textchannel.name + below2000 + "```")
+						totalinvitesgained = ""
+			else:
+				for textchannel in getguildbyid(theinvite).text_channels:
+					try:
+						async for content in textchannel.history(limit=None).map(lambda m: m.content):
+							if "discord.gg/" in (content):
+								totalinvitesgained = totalinvitesgained + (
+									f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
+					except:
+						afvuiwfuibwtuivw = 0
+				async with aiohttp.ClientSession() as session:
+					webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
+					n = 1900
+					flist = [totalinvitesgained[i:i + n] for i in range(0, len(totalinvitesgained), n)]
+					for below2000 in flist:
+						await webhook.send("```" + below2000 + "```")
 
 client.run(TOKEN)
