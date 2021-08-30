@@ -47,7 +47,7 @@ async def on_message(message):
 							totalinvitesgained = totalinvitesgained + (
 								f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
 				except:
-					afvuiwfuibwtuivw = 0
+					pass
 			async with aiohttp.ClientSession() as session:
 				webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
 				await webhook.send("```" + totalinvitesgained + "```")
@@ -62,7 +62,7 @@ async def on_message(message):
 							totalinvitesgained = totalinvitesgained + (
 								f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
 				except:
-					afvuiwfuibwtuivw = 0
+					pass
 			async with aiohttp.ClientSession() as session:
 				webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
 				await webhook.send("```" + totalinvitesgained + "```")
