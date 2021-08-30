@@ -31,17 +31,38 @@ async def on_message(message):
 		theserver = theguildjoinedid
 		print("joined successfully")
 	
-	if message.author.id == client.user.id and message.content == "gaininvites":
-		totalinvitesgained = ""
-		for guild in client.guilds:
-			if guild.id == theserver:
-				print("got guild successfully")
-				for textchannel in guild.text_channels:
-					async for content in textchannel.history(limit=None).map(lambda m: m.content):
-						if "discord.gg/" in (content):
-							totalinvitesgained = totalinvitesgained + (f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
-		async with aiohttp.ClientSession() as session:
-			webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
-			await webhook.send("```" + totalinvitesgained + "```")
+	if message.author.id == client.user.id and "gaininvites" in message.content:
+		if message.content == "gaininvites":
+			totalinvitesgained = ""
+			for guild in client.guilds:
+				if guild.id == theserver:
+					print("got guild successfully")
+					for textchannel in guild.text_channels:
+						try:
+							async for content in textchannel.history(limit=None).map(lambda m: m.content):
+								if "discord.gg/" in (content):
+									totalinvitesgained = totalinvitesgained + (f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
+						except:
+							afvuiwfuibwtuivw = 0
+			async with aiohttp.ClientSession() as session:
+				webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
+				await webhook.send("```" + totalinvitesgained + "```")
+		else:
+			theinvite = int(message.content.split("gaininvites ")[1])
+			totalinvitesgained = ""
+			for guild in client.guilds:
+				if guild.id == theinvite:
+					print("got guild successfully")
+					for textchannel in guild.text_channels:
+						try:
+							async for content in textchannel.history(limit=None).map(lambda m: m.content):
+								if "discord.gg/" in (content):
+									totalinvitesgained = totalinvitesgained + (
+										f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
+						except:
+							afvuiwfuibwtuivw = 0
+			async with aiohttp.ClientSession() as session:
+				webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
+				await webhook.send("```" + totalinvitesgained + "```")
 			
 client.run(TOKEN)
