@@ -1,4 +1,4 @@
-#dont be dumb like me, use it on an account that is phone verified or join one server every few minutes (if not your account gets phone locked)
+# dont be dumb like me, use it on an account that is phone verified or join one server every few minutes (if not your account gets phone locked)
 
 import discord
 from discord import Webhook, AsyncWebhookAdapter
@@ -6,13 +6,18 @@ import aiohttp
 import requests
 import time
 
-TOKEN = ""
-WEBHOOK = ""
+TOKEN = "ODU1MjUxODQ0MzE3OTcwNDQy.YSY-kw.UaSwEcOjyf_xf3fZfLgWaCrnVcw"
+WEBHOOK = "https://ptb.discord.com/api/webhooks/881841443021393941/1P5C8Bx1gR-Tq2CAM_a8wLaxjHUhfcktGf-Ah4TL97nSF0CVAX6yHusUMhMjUKFZPxHb"
 client = discord.Client()
 theserver = 0
+
+def getguildbyid(theid):
+	for guild in client.guilds:
+		if guild.id == theid:
+			return guild
 @client.event
 async def on_ready():
-  print(f'{client.user} has connected to Discord!')
+	print(f'{client.user} has connected to Discord!')
 
 @client.event
 async def on_message(message):
@@ -22,7 +27,7 @@ async def on_message(message):
 			if "discord.gg/" in (content):
 				print(f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}")
 		print("finished")
-		
+	
 	if message.author.id == client.user.id and "joinserver " in message.content:
 		theinvite = message.content.split("joinserver ")[1]
 		r = requests.post("https://discordapp.com/api/v6/invites/" + theinvite, headers={'authorization': TOKEN})
@@ -34,35 +39,33 @@ async def on_message(message):
 	if message.author.id == client.user.id and "gaininvites" in message.content:
 		if message.content == "gaininvites":
 			totalinvitesgained = ""
-			for guild in client.guilds:
-				if guild.id == theserver:
-					print("got guild successfully")
-					for textchannel in guild.text_channels:
-						try:
-							async for content in textchannel.history(limit=None).map(lambda m: m.content):
-								if "discord.gg/" in (content):
-									totalinvitesgained = totalinvitesgained + (f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
-						except:
-							afvuiwfuibwtuivw = 0
+			print("got guild successfully")
+			for textchannel in getguildbyid(theserver).text_channels:
+				try:
+					async for content in textchannel.history(limit=None).map(lambda m: m.content):
+						if "discord.gg/" in (content):
+							totalinvitesgained = totalinvitesgained + (
+								f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
+				except:
+					afvuiwfuibwtuivw = 0
 			async with aiohttp.ClientSession() as session:
 				webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
 				await webhook.send("```" + totalinvitesgained + "```")
 		else:
 			theinvite = int(message.content.split("gaininvites ")[1])
 			totalinvitesgained = ""
-			for guild in client.guilds:
-				if guild.id == theinvite:
-					print("got guild successfully")
-					for textchannel in guild.text_channels:
-						try:
-							async for content in textchannel.history(limit=None).map(lambda m: m.content):
-								if "discord.gg/" in (content):
-									totalinvitesgained = totalinvitesgained + (
-										f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
-						except:
-							afvuiwfuibwtuivw = 0
+			print("got guild successfully")
+			for textchannel in getguildbyid(theinvite).text_channels:
+				try:
+					async for content in textchannel.history(limit=None).map(lambda m: m.content):
+						if "discord.gg/" in (content):
+							totalinvitesgained = totalinvitesgained + (
+								f"https://discord.gg/{content.split('discord.gg/')[1].split(' ')[0]}") + "\n"
+				except:
+					afvuiwfuibwtuivw = 0
 			async with aiohttp.ClientSession() as session:
 				webhook = Webhook.from_url(WEBHOOK, adapter=AsyncWebhookAdapter(session))
 				await webhook.send("```" + totalinvitesgained + "```")
-			
+
+
 client.run(TOKEN)
