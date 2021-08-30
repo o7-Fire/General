@@ -33,14 +33,13 @@ async def on_message(message):
       totalcount = 1
       totalmessage = ""
       for lines in r:
-        print(totalcount)
-        print(lines)
         if totalcount % 5 != 0 and (len(r) - totalcount) >= 5:
           totalmessage = totalmessage + lines + "\n"
-          totalcount = totalcount + 1
         else:
+          totalmessage = totalmessage + lines + "\n"
           print("sending: \n" + totalmessage)
           await webhook.send(content=totalmessage)
           totalmessage = ""
+        totalcount = totalcount + 1
         
 client.run(TOKEN)
