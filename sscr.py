@@ -6,8 +6,8 @@ import aiohttp
 import requests
 import time
 
-TOKEN = "ODU1MjUxODQ0MzE3OTcwNDQy.YSY-kw.UaSwEcOjyf_xf3fZfLgWaCrnVcw"
-WEBHOOK = "https://ptb.discord.com/api/webhooks/881841443021393941/1P5C8Bx1gR-Tq2CAM_a8wLaxjHUhfcktGf-Ah4TL97nSF0CVAX6yHusUMhMjUKFZPxHb"
+TOKEN = ""
+WEBHOOK = ""
 client = discord.Client()
 theserver = 0
 
