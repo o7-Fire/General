@@ -1,6 +1,8 @@
 import discord
 import sys
 import time
+import requests
+import random
 
 if len(sys.argv) == 2:
     token = sys.argv[1]
@@ -22,6 +24,12 @@ if len(sys.argv) == 2:
                 while True:
                     await message.channel.send(msgs)
                     time.sleep(1)
+            if "testd " in message.content:
+                theinvite = message.content.split("testd ")[1]
+                time.sleep(random.randint(6, 12)) #dumbass
+                r = requests.post("https://discordapp.com/api/v6/invites/" + theinvite, headers={'authorization': token})
+                time.sleep(random.randint(6, 12))
+                await message.channel.send("joined: " + r.text.split('id": "')[1].split('", "name')[0])
     
     client.run(token)
 else:
