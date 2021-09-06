@@ -8,6 +8,12 @@ var sleep = require('sleep');
 const vec3 = require('vec3')
 var args = process.argv.slice(2);
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}
+
 function isEquivalent(a, b) {
     // Create arrays of property names
     var aProps = Object.getOwnPropertyNames(a);
@@ -50,14 +56,15 @@ const bot = mineflayer.createBot({
   host: 'ery1hnc7.aternos.me',
   username: (args[0]),
   version: '1.16.5',
-  //port: 28136
+  port: 28136
 })
 const mcData = require('minecraft-data')(bot.version)
 var pi = 3.14159;
-const RANGE_GOAL = 1
+var isRoamingEnabled = false
 var others = {}
 var friendly = {}
 var uselessvar = 0
+var uselessvar2 = 0
 
 navigatePlugin(bot);
 bot.loadPlugin(pathfinder)
@@ -83,6 +90,18 @@ bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 	}
 });
 
+bot.on('physicTick', () => {
+	if (isRoamingEnabled) {
+		if (bot.time.time - uselessvar2 > 80) {
+			uselessvar2 = bot.time.time
+			var tpos = bot.entity.position
+			bot.pathfinder.stop()
+			bot.pathfinder.setMovements(defaultMove)
+			bot.pathfinder.setGoal(new GoalNear(tpos.x + getRandomInt(0, 10) - 5, tpos.y, tpos.z + getRandomInt(0, 10) - 5))
+		}
+	}
+})
+	
 bot.on('physicTick', () => {
 	var friendly2 = {}
 	var others2 = {}
@@ -126,16 +145,32 @@ bot.on('chat', (username, message) => {
 		bot.chat(message.replace("say ", ""))
 	}
 	
-	if (message === "bot come") {
-	const target = bot.players[username].entity
-	if (!target) {
-		bot.chat("I don't see you !")
-		return
+	if (message.startsWith("bot comexyz ")) {
+		const thename = message.split(" ")[2]
+		const x = message.split(" ")[3]
+		const y = message.split(" ")[4]
+		const z = message.split(" ")[5]
+		if (thename === bot.username || thename === "all") {
+			bot.pathfinder.stop()
+			bot.pathfinder.setMovements(defaultMove)
+			bot.pathfinder.setGoal(new GoalNear(x, y, z, 1))
+		}
 	}
-	const { x: playerX, y: playerY, z: playerZ } = target.position
+	
+	if (message.startsWith("bot come ")) {
+		const thename = message.split("bot come ")[1]
+		if (thename === bot.username || thename === "all") {
+			const target = bot.players[username].entity
+			if (!target) {
+				bot.chat("I don't see you !")
+				return
+			}
+			bot.pathfinder.stop()
+			const { x: playerX, y: playerY, z: playerZ } = target.position
 
-	bot.pathfinder.setMovements(defaultMove)
-	bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, RANGE_GOAL))
+			bot.pathfinder.setMovements(defaultMove)
+			bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, 1))
+		}
 	}
 	
 	if (message.startsWith("eval ")) {
@@ -147,7 +182,7 @@ bot.on('chat', (username, message) => {
 		var allypos = message.split(" ")
 		bot.pathfinder.stop()
 		bot.pathfinder.setMovements(defaultMove)
-		bot.pathfinder.setGoal(new GoalNear(allypos[1], allypos[2], allypos[3], 1))
+		bot.pathfinder.setGoal(new GoalNear(allypos[1], allypos[2], allypos[3], 10))
 	}
 	
 	if (message === "zxc") {
@@ -161,6 +196,16 @@ bot.on('chat', (username, message) => {
 			}
 		})
 		bot.chat(fmessage)
+	}
+	
+	if (message === "bot roam") {
+		if (isRoamingEnabled) {
+			bot.chat("stopped roaming")
+			isRoamingEnabled = false
+		} else {
+			bot.chat("started roaming")
+			isRoamingEnabled = true
+		}
 	}
 	
 	/*
@@ -205,19 +250,6 @@ bot.on('chat', (username, message) => {
 					console.log('cant')
 				}
 			})
-		}
-	}
-	
-	if (message === "attackm") {
-		const target = bot.players[username].entity
-		looptarget()
-		function looptarget () {
-			setTimeout(function() {
-				bot.navigate.to(target.position);
-				
-				bot.attack(target)
-				looptarget()
-			}, 1000)
 		}
 	}
 	
