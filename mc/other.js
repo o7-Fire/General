@@ -58,6 +58,8 @@ const bot = mineflayer.createBot({
   version: '1.16.5',
   port: 28136
 })
+
+var botprefix = "NBot" // change this to something else if you want to change the name in main.py
 const mcData = require('minecraft-data')(bot.version)
 var pi = 3.14159;
 var isRoamingEnabled = false
@@ -80,8 +82,8 @@ bot.once('spawn', () => {
 })
 */
 bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
-	if ((victim.displayName || victim.username).startsWith("NBot")) {
-		if ((attacker.displayName || attacker.username).startsWith("NBot")) {
+	if ((victim.displayName || victim.username).startsWith(botprefix)) {
+		if ((attacker.displayName || attacker.username).startsWith(botprefix)) {
 			
 		} else {
 			//bot.chat(`${(victim.displayName || victim.username)} is getting attacked by ${(attacker.displayName || attacker.username)}`)
@@ -108,7 +110,7 @@ bot.on('physicTick', () => {
 	Object.entries(bot.players).forEach(([k,v]) => {
 		try {
 			playerpos = v.entity.position
-			if (v.username.startsWith("NBot") && v.username !== bot.username) {
+			if (v.username.startsWith(botprefix) && v.username !== bot.username) {
 				friendly2[v.username] = playerpos.toString()
 				//friendly2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
 			} else if (v.username !== bot.username) {
@@ -178,7 +180,7 @@ bot.on('chat', (username, message) => {
 		eval(thecode)
 	}
 	
-	if (message.startsWith("botneedhelp ") && username.startsWith("NBot")) {
+	if (message.startsWith("botneedhelp ") && username.startsWith(botprefix)) {
 		var allypos = message.split(" ")
 		bot.pathfinder.stop()
 		bot.pathfinder.setMovements(defaultMove)
