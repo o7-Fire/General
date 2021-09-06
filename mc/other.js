@@ -55,9 +55,13 @@ function myLoop() {
 	})
 	*/
 	bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
-		if ((victim.displayName || victim.username).startsWith("NBot") && !(attacker.displayName || attacker.username).startsWith("NBot") {
-			//bot.chat(`${(victim.displayName || victim.username)} is getting attacked by ${(attacker.displayName || attacker.username)}`)
-			bot.pvp.attack(attacker)
+		if ((victim.displayName || victim.username).startsWith("NBot")) {
+			if ((attacker.displayName || attacker.username).startsWith("NBot")) {
+				
+			} else {
+				//bot.chat(`${(victim.displayName || victim.username)} is getting attacked by ${(attacker.displayName || attacker.username)}`)
+				bot.pvp.attack(attacker)
+			}
 		}
 	});
 
@@ -165,7 +169,7 @@ function myLoop() {
 	bot.on('kicked', console.log)
 	bot.on('error', console.log)
     i++;               
-    if (i < 6) { 
+    if (i <= 10) { 
       myLoop();             
     }              
   }, 6000)
