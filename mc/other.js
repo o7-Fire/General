@@ -8,12 +8,42 @@ var sleep = require('sleep');
 const vec3 = require('vec3')
 var args = process.argv.slice(2);
 
+function isEquivalent(a, b) {
+    // Create arrays of property names
+    var aProps = Object.getOwnPropertyNames(a);
+    var bProps = Object.getOwnPropertyNames(b);
+
+    // If number of properties is different,
+    // objects are not equivalent
+    if (aProps.length != bProps.length) {
+        return false;
+    }
+
+    for (var i = 0; i < aProps.length; i++) {
+        var propName = aProps[i];
+
+        // If values of same property are not equal,
+        // objects are not equivalent
+        if (a[propName] !== b[propName]) {
+            return false;
+        }
+    }
+
+    // If we made it this far, objects
+    // are considered equivalent
+    return true;
+}
+
 function itemToString (item) {
 	if (item) {
 		return `${item.name} x ${item.count}`
 	} else {
 		return '(nothing)'
 	}
+}
+
+function isEmpty(obj) {
+	return Object.keys(obj).length === 0;
 }
 
 const bot = mineflayer.createBot({
@@ -25,7 +55,9 @@ const bot = mineflayer.createBot({
 const mcData = require('minecraft-data')(bot.version)
 var pi = 3.14159;
 const RANGE_GOAL = 1
-const others = {}
+var others = {}
+var friendly = {}
+var uselessvar = 0
 
 navigatePlugin(bot);
 bot.loadPlugin(pathfinder)
@@ -52,32 +84,41 @@ bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 });
 
 bot.on('physicTick', () => {
-	const friendly = {}
-	const others2 = {}
+	var friendly2 = {}
+	var others2 = {}
 	Object.entries(bot.players).forEach(([k,v]) => {
 		try {
 			playerpos = v.entity.position
-			if (v.username.startsWith("NBot")) {
-				friendly.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
-			} else {
-				others.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
+			if (v.username.startsWith("NBot") && v.username !== bot.username) {
+				friendly2[v.username] = playerpos.toString()
+				//friendly2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
+			} else if (v.username !== bot.username) {
+				others2[v.username] = (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())
+				//others2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
 			}
 		} catch (error) {
 			// do nothing
 		}
 	})
-	
+	//console.log(`uselessvar: ${uselessvar}, friendly: ${JSON.stringify(friendly2)}, others: ${JSON.stringify(others2)}`)
 	// check if theres any nearby allies
-	if (isEmptyObject(friendly)) {
-		var botpos = bot.position
+	if (!isEmpty(others) && isEmpty(friendly) && uselessvar >= 100) {
+		var botpos = bot.entity.position
+		console.log(botpos)
 		bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
+		uselessvar = 0
 	} else {
+		uselessvar = uselessvar + 1
+		/*
+		console.log('nope')
 		Object.entries(others2).forEach(([k,v]) => {
-			
+			console.log("penemy")
 		})
+		*/
 	}
 	others = others2
-}
+	friendly = friendly2
+})
 
 bot.on('chat', (username, message) => {
 	if (username === bot.username) return
@@ -104,6 +145,7 @@ bot.on('chat', (username, message) => {
 	
 	if (message.startsWith("botneedhelp ") && username.startsWith("NBot")) {
 		var allypos = message.split(" ")
+		bot.pathfinder.stop()
 		bot.pathfinder.setMovements(defaultMove)
 		bot.pathfinder.setGoal(new GoalNear(allypos[1], allypos[2], allypos[3], 1))
 	}
