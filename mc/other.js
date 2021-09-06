@@ -55,12 +55,10 @@ function myLoop() {
 	})
 	*/
 	bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
-		bot.pvp.attack(player.entity)
-		/*if (weapon) {
-			console.log("Entity: "+ (victim.displayName || victim.username ) + " attacked by: " + (attacker.displayName|| attacker.username) + " with: " + weapon.displayName);
-		} else {
-			console.log("Entity: "+ (victim.displayName || victim.username ) + " attacked by: " + (attacker.displayName|| attacker.username) );
-		}*/
+		if ((victim.displayName || victim.username).startsWith("NBot") && !(attacker.displayName || attacker.username).startsWith("NBot") {
+			//bot.chat(`${(victim.displayName || victim.username)} is getting attacked by ${(attacker.displayName || attacker.username)}`)
+			bot.pvp.attack(attacker)
+		}
 	});
 
 	bot.on('chat', (username, message) => {
