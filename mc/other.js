@@ -61,7 +61,7 @@ const bot = mineflayer.createBot({
 
 var botprefix = "NBot" // change this to something else if you want to change the name in main.py
 const mcData = require('minecraft-data')(bot.version)
-var pi = 3.14159;
+var pi = Math.PI;
 var isRoamingEnabled = false
 var others = {}
 var friendly = {}
