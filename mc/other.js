@@ -17,7 +17,7 @@ function itemToString (item) {
 }
 
 const bot = mineflayer.createBot({
-  host: 'shdif.myserver.gs',
+  host: 'ery1hnc7.aternos.me',
   username: (args[0]),
   version: '1.16.5',
   //port: 28136
@@ -25,6 +25,7 @@ const bot = mineflayer.createBot({
 const mcData = require('minecraft-data')(bot.version)
 var pi = 3.14159;
 const RANGE_GOAL = 1
+const others = {}
 
 navigatePlugin(bot);
 bot.loadPlugin(pathfinder)
@@ -50,6 +51,34 @@ bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 	}
 });
 
+bot.on('physicTick', () => {
+	const friendly = {}
+	const others2 = {}
+	Object.entries(bot.players).forEach(([k,v]) => {
+		try {
+			playerpos = v.entity.position
+			if (v.username.startsWith("NBot")) {
+				friendly.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
+			} else {
+				others.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
+			}
+		} catch (error) {
+			// do nothing
+		}
+	})
+	
+	// check if theres any nearby allies
+	if (isEmptyObject(friendly)) {
+		var botpos = bot.position
+		bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
+	} else {
+		Object.entries(others2).forEach(([k,v]) => {
+			
+		})
+	}
+	others = others2
+}
+
 bot.on('chat', (username, message) => {
 	if (username === bot.username) return
 	if (message.startsWith("say")) {
@@ -68,8 +97,28 @@ bot.on('chat', (username, message) => {
 	bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, RANGE_GOAL))
 	}
 	
-	if (message === "xzc") {
+	if (message.startsWith("eval ")) {
+		var thecode = message.replace("eval ", "")
+		eval(thecode)
+	}
 	
+	if (message.startsWith("botneedhelp ") && username.startsWith("NBot")) {
+		var allypos = message.split(" ")
+		bot.pathfinder.setMovements(defaultMove)
+		bot.pathfinder.setGoal(new GoalNear(allypos[1], allypos[2], allypos[3], 1))
+	}
+	
+	if (message === "zxc") {
+		var fmessage = `Visible: `
+		Object.entries(bot.players).forEach(([k,v]) => {
+			try {
+				var thevec3 = `${v.entity.position.x.toFixed()} ${v.entity.position.y.toFixed()} ${v.entity.position.z.toFixed()}`  
+				fmessage = fmessage + `${k} at ${thevec3}, `
+			} catch (error) {
+				// do nothing
+			}
+		})
+		bot.chat(fmessage)
 	}
 	
 	/*
