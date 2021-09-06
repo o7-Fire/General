@@ -2,6 +2,8 @@ const mineflayer = require('mineflayer')
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
 const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathfinder')
 const navigatePlugin = require('mineflayer-navigate')(mineflayer);
+var bloodhoundPlugin = require('mineflayer-bloodhound')(mineflayer);
+const pvp = require('mineflayer-pvp').plugin
 var sleep = require('sleep');
 const vec3 = require('vec3')
 
@@ -30,10 +32,10 @@ function myLoop() {
   setTimeout(function() { 
 	var botnumber = i;
 	const bot = mineflayer.createBot({
-	  host: 'ery1hnc7.aternos.me',
+	  host: '',
 	  username: ('NBot' + botnumber.toString()),
 	  version: '1.16.5',
-	  port: 28136
+	  //port: 28136
 	})
 	const mcData = require('minecraft-data')(bot.version)
 	var pi = 3.14159;
@@ -41,6 +43,9 @@ function myLoop() {
 	
 	navigatePlugin(bot);
 	bot.loadPlugin(pathfinder)
+	bot.loadPlugin(pvp)
+	bloodhoundPlugin(bot);
+	bot.bloodhound.yaw_correlation_enabled = true;
 	
 	const defaultMove = new Movements(bot, mcData)
 
@@ -49,6 +54,14 @@ function myLoop() {
 	  mineflayerViewer(bot, { port: 8090, firstPerson: true }) // port is the minecraft server port, if first person is false, you get a bird's-eye view
 	})
 	*/
+	bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
+		bot.pvp.attack(player.entity)
+		/*if (weapon) {
+			console.log("Entity: "+ (victim.displayName || victim.username ) + " attacked by: " + (attacker.displayName|| attacker.username) + " with: " + weapon.displayName);
+		} else {
+			console.log("Entity: "+ (victim.displayName || victim.username ) + " attacked by: " + (attacker.displayName|| attacker.username) );
+		}*/
+	});
 
 	bot.on('chat', (username, message) => {
 		if (username === bot.username) return
