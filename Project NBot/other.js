@@ -82,14 +82,12 @@ bot.once('spawn', () => {
 })
 */
 bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
-	if (!isEmpty(friendly)) {
-		if ((victim.displayName || victim.username).startsWith(botprefix)) {
-			if ((attacker.displayName || attacker.username).startsWith(botprefix)) {
-				
-			} else {
-				//bot.chat(`${(victim.displayName || victim.username)} is getting attacked by ${(attacker.displayName || attacker.username)}`)
-				bot.pvp.attack(attacker)
-			}
+	if ((victim.displayName || victim.username).startsWith(botprefix)) {
+		if ((attacker.displayName || attacker.username).startsWith(botprefix)) {
+			
+		} else {
+			//bot.chat(`${(victim.displayName || victim.username)} is getting attacked by ${(attacker.displayName || attacker.username)}`)
+			bot.pvp.attack(attacker)
 		}
 	}
 });
@@ -125,12 +123,12 @@ bot.on('physicTick', () => {
 	})
 	//console.log(`uselessvar: ${uselessvar}, friendly: ${JSON.stringify(friendly2)}, others: ${JSON.stringify(others2)}`)
 	// check if theres any nearby allies
-	if (!isEmpty(others) && isEmpty(friendly) && uselessvar >= 22) {
+	if (!isEmpty(others) && isEmpty(friendly) && uselessvar >= 100) {
 		var botpos = bot.entity.position
 		//console.log(botpos)
-		//bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
+		bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
 		uselessvar = 0
-	} else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 20) {
+	} else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 30) {
 		uselessvar = uselessvar + 1
 		Object.entries(others2).forEach(([k,v]) => {
 			try {
@@ -140,101 +138,21 @@ bot.on('physicTick', () => {
 					if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
 						var posX = thevpos.x.toFixed() - botpos.x.toFixed()
 						var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
-						if (posX < 7) {
-							if (posZ < 7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() + 7, botpos.y.toFixed(), botpos.z.toFixed() + 7, 1))
-							} else {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() + 7, botpos.y.toFixed(), botpos.z.toFixed(), 1))
-							}
-						} else {
-							if (posZ < 7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed(), botpos.y.toFixed(), botpos.z.toFixed() + 7, 1))
-							} else {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed(), botpos.y.toFixed(), botpos.z.toFixed(), 1))
-							}
-						}
+						console.log(`${k} : ${posX} ${posZ}`)
 					} else { 
 						var posX = thevpos.x.toFixed() - botpos.x.toFixed()
 						var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
-						if (posX < 7) {
-							if (posZ < 7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() + 7, botpos.y.toFixed(), botpos.z.toFixed() - 7, 1))
-							} else {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() + 7, botpos.y.toFixed(), botpos.z.toFixed(), 1))
-							}
-						} else {
-							if (posZ < 7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed(), botpos.y.toFixed(), botpos.z.toFixed() - 7, 1))
-							} else {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed(), botpos.y.toFixed(), botpos.z.toFixed(), 1))
-							}
-						}
+						console.log(`${k} : ${posX} -${posZ}`)
 					}
 				} else {
 					if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
 						var posX = botpos.x.toFixed() - thevpos.x.toFixed()
 						var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
-						if (posX < 7) {
-							if (posZ < 7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() - 7, botpos.y.toFixed(), botpos.z.toFixed() + 7, 1))
-							} else {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() - 7, botpos.y.toFixed(), botpos.z.toFixed(), 1))
-							}
-						} else {
-							if (posZ < 7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed(), botpos.y.toFixed(), botpos.z.toFixed() + 7, 1))
-							} else {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed(), botpos.y.toFixed(), botpos.z.toFixed(), 1))
-							}
-						}
+						console.log(`${k} : -${posX} ${posZ}`)
 					} else {
 						var posX = botpos.x.toFixed() - thevpos.x.toFixed()
 						var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
-						if (posX < 7) {
-							if (posZ < 7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() - 7, botpos.y.toFixed(), botpos.z.toFixed() - 7, 1))
-							} else {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() - 7, botpos.y.toFixed(), botpos.z.toFixed(), 1))
-							}
-						} else {
-							if (posZ < 7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed(), botpos.y.toFixed(), botpos.z.toFixed() - 7, 1))
-							} else {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed(), botpos.y.toFixed(), botpos.z.toFixed(), 1))
-							}
-						}
+						console.log(`${k} : -${posX} -${posZ}`)
 					}
 				}
 			} catch (error) {
