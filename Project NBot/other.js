@@ -123,10 +123,10 @@ bot.on('physicTick', () => {
 	})
 	//console.log(`uselessvar: ${uselessvar}, friendly: ${JSON.stringify(friendly2)}, others: ${JSON.stringify(others2)}`)
 	// check if theres any nearby allies
-	if (!isEmpty(others) && isEmpty(friendly) && uselessvar >= 100) {
+	if (!isEmpty(others) && isEmpty(friendly) && uselessvar >= 31) {
 		var botpos = bot.entity.position
 		//console.log(botpos)
-		bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
+		//bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
 		uselessvar = 0
 	} else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 30) {
 		uselessvar = uselessvar + 1
@@ -139,20 +139,40 @@ bot.on('physicTick', () => {
 						var posX = thevpos.x.toFixed() - botpos.x.toFixed()
 						var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
 						console.log(`${k} : ${posX} ${posZ}`)
+						if (posX < 7 && posZ < 7) {
+							bot.pathfinder.stop()
+							bot.pathfinder.setMovements(defaultMove)
+							bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() - 7, botpos.y.toFixed(), botpos.z.toFixed() - 7, 1))
+						}
 					} else { 
 						var posX = thevpos.x.toFixed() - botpos.x.toFixed()
 						var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
 						console.log(`${k} : ${posX} -${posZ}`)
+						if (posX < 7 && posZ < 7) {
+							bot.pathfinder.stop()
+							bot.pathfinder.setMovements(defaultMove)
+							bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() - 7, botpos.y.toFixed(), botpos.z.toFixed() + 7, 1))
+						}
 					}
 				} else {
 					if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
 						var posX = botpos.x.toFixed() - thevpos.x.toFixed()
 						var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
 						console.log(`${k} : -${posX} ${posZ}`)
+						if (posX < 7 && posZ < 7) {
+							bot.pathfinder.stop()
+							bot.pathfinder.setMovements(defaultMove)
+							bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() + 7, botpos.y.toFixed(), botpos.z.toFixed() - 7, 1))
+						}
 					} else {
 						var posX = botpos.x.toFixed() - thevpos.x.toFixed()
 						var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
 						console.log(`${k} : -${posX} -${posZ}`)
+						if (posX < 7 && posZ < 7) {
+							bot.pathfinder.stop()
+							bot.pathfinder.setMovements(defaultMove)
+							bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() + 7, botpos.y.toFixed(), botpos.z.toFixed() + 7, 1))
+						}
 					}
 				}
 			} catch (error) {
