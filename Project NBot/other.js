@@ -126,7 +126,7 @@ bot.on('physicTick', () => {
 	if (!isEmpty(others) && isEmpty(friendly) && uselessvar >= 31) {
 		var botpos = bot.entity.position
 		//console.log(botpos)
-		//bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
+		bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
 		uselessvar = 0
 	} else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 30) {
 		uselessvar = uselessvar + 1
