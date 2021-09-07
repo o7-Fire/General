@@ -139,19 +139,19 @@ bot.on('physicTick', () => {
 						var posX = thevpos.x.toFixed() - botpos.x.toFixed()
 						var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
 						console.log(`${k} : ${posX} ${posZ}`)
-						if (posX < 7 && posZ < 7) {
+						if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
 							bot.pathfinder.stop()
 							bot.pathfinder.setMovements(defaultMove)
-							bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() - 7, botpos.y.toFixed(), botpos.z.toFixed() - 7, 1))
+							bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z - 4, 1))
 						}
 					} else { 
 						var posX = thevpos.x.toFixed() - botpos.x.toFixed()
 						var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
 						console.log(`${k} : ${posX} -${posZ}`)
-						if (posX < 7 && posZ < 7) {
+						if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
 							bot.pathfinder.stop()
 							bot.pathfinder.setMovements(defaultMove)
-							bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() - 7, botpos.y.toFixed(), botpos.z.toFixed() + 7, 1))
+							bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z + 4, 1))
 						}
 					}
 				} else {
@@ -159,19 +159,19 @@ bot.on('physicTick', () => {
 						var posX = botpos.x.toFixed() - thevpos.x.toFixed()
 						var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
 						console.log(`${k} : -${posX} ${posZ}`)
-						if (posX < 7 && posZ < 7) {
+						if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
 							bot.pathfinder.stop()
 							bot.pathfinder.setMovements(defaultMove)
-							bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() + 7, botpos.y.toFixed(), botpos.z.toFixed() - 7, 1))
+							bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z - 4, 1))
 						}
 					} else {
 						var posX = botpos.x.toFixed() - thevpos.x.toFixed()
 						var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
 						console.log(`${k} : -${posX} -${posZ}`)
-						if (posX < 7 && posZ < 7) {
+						if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
 							bot.pathfinder.stop()
 							bot.pathfinder.setMovements(defaultMove)
-							bot.pathfinder.setGoal(new GoalNear(botpos.x.toFixed() + 7, botpos.y.toFixed(), botpos.z.toFixed() + 7, 1))
+							bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z + 4, 1))
 						}
 					}
 				}
