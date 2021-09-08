@@ -3,6 +3,7 @@ const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
 const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathfinder')
 const navigatePlugin = require('mineflayer-navigate')(mineflayer);
 var bloodhoundPlugin = require('mineflayer-bloodhound')(mineflayer);
+const {autoCrystal} = require('mineflayer-autocrystal')
 const pvp = require('mineflayer-pvp').plugin
 var sleep = require('sleep');
 const vec3 = require('vec3')
@@ -63,6 +64,7 @@ var botprefix = "NBot" // change this to something else if you want to change th
 const mcData = require('minecraft-data')(bot.version)
 var pi = 3.14159;
 var isRoamingEnabled = false
+var isAutototemEnabled = false
 var others = {}
 var friendly = {}
 var uselessvar = 0
@@ -71,6 +73,7 @@ var uselessvar2 = 0
 navigatePlugin(bot);
 bot.loadPlugin(pathfinder)
 bot.loadPlugin(pvp)
+bot.loadPlugin(autoCrystal)
 bloodhoundPlugin(bot);
 bot.bloodhound.yaw_correlation_enabled = true;
 
@@ -81,6 +84,16 @@ bot.once('spawn', () => {
   mineflayerViewer(bot, { port: 8090, firstPerson: true }) // port is the minecraft server port, if first person is false, you get a bird's-eye view
 })
 */
+
+bot.once('spawn', () => {
+	bot.autoCrystal.options.logErrors = false
+	bot.chat("/clear")
+	bot.chat("/gamemode creative")
+	bot.chat("/give @s totem_of_undying")
+	bot.chat("/give @s end_crystal 500")
+	bot.chat("/gamemode survival")
+})
+
 bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 	if ((victim.displayName || victim.username).startsWith(botprefix)) {
 		if ((attacker.displayName || attacker.username).startsWith(botprefix)) {
@@ -92,7 +105,37 @@ bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 	}
 });
 
+function autototem() {
+	setTimeout(function() {
+		var ifhas = 0
+		var items = bot.inventory.items()
+		var arrayLength = items.length;
+		for (var i = 0; i < arrayLength; i++) {
+			var theitem = items[i]
+			if (theitem.name === "totem_of_undying") { 
+				ifhas = 1
+			}
+		}
+		if (ifhas === 0) {
+			bot.chat("/give @s totem_of_undying")
+		}
+		if (isAutototemEnabled) {
+			const totemName = 'totem_of_undying'
+			const totem = bot.inventory.items().find(item => item.name === totemName)
+
+			if (totem && !bot.inventory.slots[45]) {
+				bot.equip(totem, 'off-hand')
+			} else if (totem && bot.inventory.slots[45] && bot.inventory.slots[45].name !== totemName) {
+				bot.equip(totem, 'off-hand')
+			}
+		}
+		autototem()
+	}, 500)
+}
+autototem()
+
 bot.on('physicTick', () => {
+	
 	if (isRoamingEnabled) {
 		if (bot.time.time - uselessvar2 > 80) {
 			uselessvar2 = bot.time.time
@@ -126,7 +169,7 @@ bot.on('physicTick', () => {
 	if (!isEmpty(others) && isEmpty(friendly) && uselessvar >= 31) {
 		var botpos = bot.entity.position
 		//console.log(botpos)
-		bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
+		//bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
 		uselessvar = 0
 	} else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 30) {
 		uselessvar = uselessvar + 1
@@ -258,6 +301,16 @@ bot.on('chat', (username, message) => {
 		} else {
 			bot.chat("started roaming")
 			isRoamingEnabled = true
+		}
+	}
+	
+	if (message === "bot autototem") {
+		if (isAutototemEnabled) {
+			bot.chat("disabled auto-totem")
+			isAutototemEnabled = false
+		} else {
+			bot.chat("enabled auto-totem")
+			isAutototemEnabled = true
 		}
 	}
 	
