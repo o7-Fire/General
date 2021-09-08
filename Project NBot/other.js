@@ -3,7 +3,8 @@ const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
 const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathfinder')
 const navigatePlugin = require('mineflayer-navigate')(mineflayer);
 var bloodhoundPlugin = require('mineflayer-bloodhound')(mineflayer);
-const {autoCrystal} = require('mineflayer-autocrystal')
+const armorManager = require('mineflayer-armor-manager')
+//const {autoCrystal} = require('mineflayer-autocrystal')
 const pvp = require('mineflayer-pvp').plugin
 var sleep = require('sleep');
 const vec3 = require('vec3')
@@ -73,7 +74,8 @@ var uselessvar2 = 0
 navigatePlugin(bot);
 bot.loadPlugin(pathfinder)
 bot.loadPlugin(pvp)
-bot.loadPlugin(autoCrystal)
+bot.loadPlugin(armorManager);
+//bot.loadPlugin(autoCrystal)
 bloodhoundPlugin(bot);
 bot.bloodhound.yaw_correlation_enabled = true;
 
@@ -86,11 +88,15 @@ bot.once('spawn', () => {
 */
 
 bot.once('spawn', () => {
-	bot.autoCrystal.options.logErrors = false
+	//bot.autoCrystal.options.logErrors = false
 	bot.chat("/clear")
 	bot.chat("/gamemode creative")
 	bot.chat("/give @s totem_of_undying")
-	bot.chat("/give @s end_crystal 500")
+	bot.chat("/give @s netherite_chestplate")
+	bot.chat("/give @s netherite_helmet")
+	bot.chat("/give @s netherite_leggings")
+	bot.chat("/give @s netherite_boots")
+	//bot.chat("/give @s end_crystal 500")
 	bot.chat("/gamemode survival")
 })
 
@@ -132,7 +138,7 @@ function autototem() {
 		autototem()
 	}, 500)
 }
-autototem()
+setTimeout(function() { autototem() }, 5000)
 
 bot.on('physicTick', () => {
 	
@@ -272,6 +278,10 @@ bot.on('chat', (username, message) => {
 	if (message.startsWith("eval ")) {
 		var thecode = message.replace("eval ", "")
 		eval(thecode)
+	}
+	
+	if (message === "equiparmor") {
+		bot.armorManager.equipAll()
 	}
 	
 	if (message.startsWith("botneedhelp ") && username.startsWith(botprefix)) {
