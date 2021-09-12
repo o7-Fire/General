@@ -55,13 +55,14 @@ function isEmpty(obj) {
 }
 
 const bot = mineflayer.createBot({
-  host: 'ery1hnc7.aternos.me',
+  host: '',
   username: (args[0]),
   version: '1.16.5',
-  port: 28136
+  //port: 28136
 })
 
 var botprefix = "NBot" // change this to something else if you want to change the name in main.py
+var botowner = "Nexity" // to prevent people hijacking your bot
 const mcData = require('minecraft-data')(bot.version)
 var pi = 3.14159;
 var isRoamingEnabled = false
@@ -70,6 +71,7 @@ var others = {}
 var friendly = {}
 var uselessvar = 0
 var uselessvar2 = 0
+var uselessvar3 = 0
 
 navigatePlugin(bot);
 bot.loadPlugin(pathfinder)
@@ -86,28 +88,43 @@ bot.once('spawn', () => {
   mineflayerViewer(bot, { port: 8090, firstPerson: true }) // port is the minecraft server port, if first person is false, you get a bird's-eye view
 })
 */
-
+/*
 bot.once('spawn', () => {
 	//bot.autoCrystal.options.logErrors = false
 	bot.chat("/clear")
 	bot.chat("/gamemode creative")
-	bot.chat("/give @s totem_of_undying")
-	bot.chat("/give @s netherite_chestplate")
-	bot.chat("/give @s netherite_helmet")
-	bot.chat("/give @s netherite_leggings")
-	bot.chat("/give @s netherite_boots")
-	//bot.chat("/give @s end_crystal 500")
+	bot.chat("/give @s diamond_axe")
 	bot.chat("/gamemode survival")
+	setTimeout(function() {
+	let itemsByName
+		if (bot.supportFeature('itemsAreNotBlocks')) {
+			itemsByName = 'itemsByName'
+		} else if (bot.supportFeature('itemsAreAlsoBlocks')) {
+			itemsByName = 'blocksByName'
+		}
+		var blocktoequip = "diamond_axe"
+		bot.equip(mcData[itemsByName][blocktoequip].id, 'hand', (err) => {
+		if (err) {
+			// nothing
+		} else {
+			// nothing
+		}
+		})
+	}, 3000)
 })
+*/
 
 bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 	if ((victim.displayName || victim.username).startsWith(botprefix)) {
 		if ((attacker.displayName || attacker.username).startsWith(botprefix)) {
-			
+
 		} else {
 			//bot.chat(`${(victim.displayName || victim.username)} is getting attacked by ${(attacker.displayName || attacker.username)}`)
 			bot.pvp.attack(attacker)
 		}
+	}
+	if ((attacker.displayName || attacker.username) === botowner) {
+		bot.pvp.attack(victim)
 	}
 });
 
@@ -123,16 +140,16 @@ function autototem() {
 			}
 		}
 		if (ifhas === 0) {
-			bot.chat("/give @s totem_of_undying")
+			//bot.chat("/give @s totem_of_undying")
 		}
 		if (isAutototemEnabled) {
 			const totemName = 'totem_of_undying'
 			const totem = bot.inventory.items().find(item => item.name === totemName)
 
 			if (totem && !bot.inventory.slots[45]) {
-				bot.equip(totem, 'off-hand')
+				try{ bot.equip(totem, 'off-hand') } catch (error) {}
 			} else if (totem && bot.inventory.slots[45] && bot.inventory.slots[45].name !== totemName) {
-				bot.equip(totem, 'off-hand')
+				try { bot.equip(totem, 'off-hand') } catch (error) {}
 			}
 		}
 		autototem()
@@ -172,12 +189,13 @@ bot.on('physicTick', () => {
 	})
 	//console.log(`uselessvar: ${uselessvar}, friendly: ${JSON.stringify(friendly2)}, others: ${JSON.stringify(others2)}`)
 	// check if theres any nearby allies
-	if (!isEmpty(others) && isEmpty(friendly) && uselessvar >= 31) {
+	if (!isEmpty(others) && isEmpty(friendly) && uselessvar3 >= 10) {
 		var botpos = bot.entity.position
 		//console.log(botpos)
-		//bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
-		uselessvar = 0
+		bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
+		uselessvar3 = 0
 	} else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 30) {
+		uselessvar3 = uselessvar3 + 1
 		uselessvar = uselessvar + 1
 		Object.entries(others2).forEach(([k,v]) => {
 			try {
@@ -243,6 +261,7 @@ bot.on('physicTick', () => {
 
 bot.on('chat', (username, message) => {
 	if (username === bot.username) return
+	if (username !== botowner) return
 	if (message.startsWith("say")) {
 		bot.chat(message.replace("say ", ""))
 	}
@@ -339,7 +358,6 @@ bot.on('chat', (username, message) => {
 	*/
 	
 	if (message.startsWith("equipblock ")) {
-		const mcData = require('minecraft-data')(bot.version)
 		let itemsByName
 		if (bot.supportFeature('itemsAreNotBlocks')) {
 			itemsByName = 'itemsByName'
