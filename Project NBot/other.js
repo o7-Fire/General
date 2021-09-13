@@ -4,6 +4,7 @@ const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathf
 const navigatePlugin = require('mineflayer-navigate')(mineflayer);
 var bloodhoundPlugin = require('mineflayer-bloodhound')(mineflayer);
 const armorManager = require('mineflayer-armor-manager')
+const autoeat = require("mineflayer-auto-eat")
 //const {autoCrystal} = require('mineflayer-autocrystal')
 const pvp = require('mineflayer-pvp').plugin
 var sleep = require('sleep');
@@ -77,6 +78,7 @@ navigatePlugin(bot);
 bot.loadPlugin(pathfinder)
 bot.loadPlugin(pvp)
 bot.loadPlugin(armorManager);
+bot.loadPlugin(autoeat)
 //bot.loadPlugin(autoCrystal)
 bloodhoundPlugin(bot);
 bot.bloodhound.yaw_correlation_enabled = true;
@@ -88,31 +90,18 @@ bot.once('spawn', () => {
   mineflayerViewer(bot, { port: 8090, firstPerson: true }) // port is the minecraft server port, if first person is false, you get a bird's-eye view
 })
 */
-/*
+
 bot.once('spawn', () => {
-	//bot.autoCrystal.options.logErrors = false
-	bot.chat("/clear")
-	bot.chat("/gamemode creative")
-	bot.chat("/give @s diamond_axe")
-	bot.chat("/gamemode survival")
-	setTimeout(function() {
-	let itemsByName
-		if (bot.supportFeature('itemsAreNotBlocks')) {
-			itemsByName = 'itemsByName'
-		} else if (bot.supportFeature('itemsAreAlsoBlocks')) {
-			itemsByName = 'blocksByName'
-		}
-		var blocktoequip = "diamond_axe"
-		bot.equip(mcData[itemsByName][blocktoequip].id, 'hand', (err) => {
-		if (err) {
-			// nothing
-		} else {
-			// nothing
-		}
-		})
-	}, 3000)
+	bot.autoEat.options.priority = "foodPoints"
+	bot.autoEat.options.bannedFood = []
+	bot.autoEat.options.eatingTimeout = 3
 })
-*/
+
+bot.on("health", () => {
+  if (bot.food === 20) bot.autoEat.disable()
+  // Disable the plugin if the bot is at 20 food points
+  else bot.autoEat.enable() // Else enable the plugin again
+})
 
 bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 	if ((victim.displayName || victim.username).startsWith(botprefix)) {
@@ -123,7 +112,7 @@ bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 			bot.pvp.attack(attacker)
 		}
 	}
-	if ((attacker.displayName || attacker.username) === botowner) {
+	if ((attacker.displayName || attacker.username) === botowner && !(victim.displayName || victim.username).startsWith(botprefix)) {
 		bot.pvp.attack(victim)
 	}
 });
@@ -296,7 +285,11 @@ bot.on('chat', (username, message) => {
 	
 	if (message.startsWith("eval ")) {
 		var thecode = message.replace("eval ", "")
-		eval(thecode)
+		try {
+			eval(thecode)
+		} catch (error) {
+			bot.chat(error.toString())
+		}
 	}
 	
 	if (message === "equiparmor") {
@@ -343,6 +336,14 @@ bot.on('chat', (username, message) => {
 		}
 	}
 	
+	if (message.startsWith("bot attack ")) {
+		try {
+			bot.pvp.attack(bot.players[message.split("bot attack ")[1]].entity)
+		} catch (error) {
+			bot.chat("Could not find person")
+		}
+	}
+	
 	/*
 	if (message === "line up") {
 		const target = bot.players[username].entity
@@ -366,12 +367,33 @@ bot.on('chat', (username, message) => {
 		}
 		var blocktoequip = message.replace("equipblock ", "");
 		bot.equip(mcData[itemsByName][blocktoequip].id, 'hand', (err) => {
-		if (err) {
-			bot.chat(`unable to equip ${blocktoequip}: ${err.message}`)
-		} else {
-			bot.chat(`equipped ${blocktoequip}`)
-		}
+			if (err) {
+				bot.chat(`unable to equip ${blocktoequip}: ${err.message}`)
+			} else {
+				bot.chat(`equipped ${blocktoequip}`)
+			}
 		})
+	}
+	
+	if (message.startsWith("throwblock ")) {
+		let itemsByName
+		if (bot.supportFeature('itemsAreNotBlocks')) {
+			itemsByName = 'itemsByName'
+		} else if (bot.supportFeature('itemsAreAlsoBlocks')) {
+			itemsByName = 'blocksByName'
+		}
+		var args = message.split(" ");
+		try {
+			bot.toss(mcData["itemsByName"][args[1]].id, null, args[2], (err) => {
+				if (err) {
+					bot.chat(`unable to throw ${blocktoequip}: ${err.message}`)
+				} else {
+					//bot.chat(`threw ${blocktoequip}`)
+				}
+			})
+		} catch (error) {
+			bot.chat("unable to find block / not enough arguments")
+		}
 	}
 	
 	if (message.startsWith("abuild ")) {
