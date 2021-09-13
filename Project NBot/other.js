@@ -68,12 +68,22 @@ const mcData = require('minecraft-data')(bot.version)
 var pi = 3.14159;
 var isRoamingEnabled = false
 var isAutototemEnabled = false
+var isAutoFishingEnabled = false
+var didfish = false
 var others = {}
 var friendly = {}
 var uselessvar = 0
 var uselessvar2 = 0
 var uselessvar3 = 0
+var a1 = false
 
+let itemsByName
+if (bot.supportFeature('itemsAreNotBlocks')) {
+	itemsByName = 'itemsByName'
+} else if (bot.supportFeature('itemsAreAlsoBlocks')) {
+	itemsByName = 'blocksByName'
+}
+		
 navigatePlugin(bot);
 bot.loadPlugin(pathfinder)
 bot.loadPlugin(pvp)
@@ -96,6 +106,30 @@ bot.once('spawn', () => {
 	bot.autoEat.options.bannedFood = []
 	bot.autoEat.options.eatingTimeout = 3
 })
+
+bot.once('soundEffectHeard', (soundName) => {
+	if (soundName === 'random.splash') {
+		setTimeout(bot.activateItem, 500)
+		didfish = true
+	}
+})
+
+function theautofish() {
+	setTimeout(function() {
+		if (isAutoFishingEnabled && a1 === false) {
+			bot.equip(bot.inventory.findInventoryItem("fishing_rod"), 'hand', (err) => {
+				if (err) {
+					bot.chat("no fishing rod in inventory")
+				} else {
+					bot.activateItem()
+				}
+			})
+		}
+		a1 = isAutoFishingEnabled
+		theautofish()
+	}, 2000)
+}
+theautofish()
 
 bot.on("health", () => {
   if (bot.food === 20) bot.autoEat.disable()
@@ -336,6 +370,16 @@ bot.on('chat', (username, message) => {
 		}
 	}
 	
+	if (message === "bot autofish") {
+		if (isAutoFishingEnabled) {
+			bot.chat("disabled auto-fish")
+			isAutoFishingEnabled = false
+		} else {
+			bot.chat("enabled auto-fish")
+			isAutoFishingEnabled = true
+		}
+	}
+	
 	if (message.startsWith("bot attack ")) {
 		try {
 			bot.pvp.attack(bot.players[message.split("bot attack ")[1]].entity)
@@ -359,12 +403,6 @@ bot.on('chat', (username, message) => {
 	*/
 	
 	if (message.startsWith("equipblock ")) {
-		let itemsByName
-		if (bot.supportFeature('itemsAreNotBlocks')) {
-			itemsByName = 'itemsByName'
-		} else if (bot.supportFeature('itemsAreAlsoBlocks')) {
-			itemsByName = 'blocksByName'
-		}
 		var blocktoequip = message.replace("equipblock ", "");
 		bot.equip(mcData[itemsByName][blocktoequip].id, 'hand', (err) => {
 			if (err) {
@@ -376,15 +414,9 @@ bot.on('chat', (username, message) => {
 	}
 	
 	if (message.startsWith("throwblock ")) {
-		let itemsByName
-		if (bot.supportFeature('itemsAreNotBlocks')) {
-			itemsByName = 'itemsByName'
-		} else if (bot.supportFeature('itemsAreAlsoBlocks')) {
-			itemsByName = 'blocksByName'
-		}
 		var args = message.split(" ");
 		try {
-			bot.toss(mcData["itemsByName"][args[1]].id, null, args[2], (err) => {
+			bot.toss(mcData[itemsByName][args[1]].id, null, args[2], (err) => {
 				if (err) {
 					bot.chat(`unable to throw ${blocktoequip}: ${err.message}`)
 				} else {
