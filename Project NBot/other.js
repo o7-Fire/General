@@ -5,6 +5,7 @@ const navigatePlugin = require('mineflayer-navigate')(mineflayer);
 var bloodhoundPlugin = require('mineflayer-bloodhound')(mineflayer);
 const armorManager = require('mineflayer-armor-manager')
 const autoeat = require("mineflayer-auto-eat")
+var blockFinderPlugin = require('mineflayer-blockfinder')(mineflayer);
 //const {autoCrystal} = require('mineflayer-autocrystal')
 const pvp = require('mineflayer-pvp').plugin
 var sleep = require('sleep');
@@ -59,7 +60,7 @@ const bot = mineflayer.createBot({
   host: '',
   username: (args[0]),
   version: '1.16.5',
-  //port: 28136
+  port: 28415
 })
 
 var botprefix = "NBot" // change this to something else if you want to change the name in main.py
@@ -69,7 +70,6 @@ var pi = 3.14159;
 var isRoamingEnabled = false
 var isAutototemEnabled = false
 var isAutoFishingEnabled = false
-var didfish = false
 var others = {}
 var friendly = {}
 var uselessvar = 0
@@ -89,6 +89,7 @@ bot.loadPlugin(pathfinder)
 bot.loadPlugin(pvp)
 bot.loadPlugin(armorManager);
 bot.loadPlugin(autoeat)
+bot.loadPlugin(blockFinderPlugin);
 //bot.loadPlugin(autoCrystal)
 bloodhoundPlugin(bot);
 bot.bloodhound.yaw_correlation_enabled = true;
@@ -107,23 +108,50 @@ bot.once('spawn', () => {
 	bot.autoEat.options.eatingTimeout = 3
 })
 
-bot.once('soundEffectHeard', (soundName) => {
-	if (soundName === 'random.splash') {
-		setTimeout(bot.activateItem, 500)
-		didfish = true
-	}
-})
-
 function theautofish() {
 	setTimeout(function() {
 		if (isAutoFishingEnabled && a1 === false) {
-			bot.equip(bot.inventory.findInventoryItem("fishing_rod"), 'hand', (err) => {
+			var istherenearbywater = false
+			bot.findBlock({point: bot.entity.position, matching: 8, maxDistance: 10, count: 1,}, function(err, blocks) {
 				if (err) {
-					bot.chat("no fishing rod in inventory")
-				} else {
-					bot.activateItem()
+					bot.chat("error while trying to find water")
 				}
-			})
+				if (blocks.length) {
+					istherenearbywater = true
+					bot.lookAt(blocks[0].position)
+				} else {
+					//
+				}
+			});
+			bot.findBlock({point: bot.entity.position, matching: 9, maxDistance: 10, count: 1,}, function(err, blocks) {
+				if (err) {
+					bot.chat("error while trying to find water")
+				}
+				if (blocks.length) {
+					istherenearbywater = true
+					bot.lookAt(blocks[0].position)
+				} else {
+					//
+				}
+			});
+			setTimeout(function() {
+				bot.equip(bot.inventory.findInventoryItem("fishing_rod"), 'hand', (err) => {
+					if (err) {
+						bot.chat("no fishing rod in inventory")
+					} else {
+						function fishingEnd(err) {
+							if (err) throw err;
+
+							setTimeout(() => {
+								if (isAutoFishingEnabled) {
+									bot.fish(fishingEnd)
+								}
+							}, 30); //no problem
+						}
+						bot.fish(fishingEnd)
+					}
+				})
+			}, 3000)
 		}
 		a1 = isAutoFishingEnabled
 		theautofish()
@@ -193,94 +221,96 @@ bot.on('physicTick', () => {
 	}
 })
 	
-bot.on('physicTick', () => {
-	var friendly2 = {}
-	var others2 = {}
-	Object.entries(bot.players).forEach(([k,v]) => {
-		try {
-			playerpos = v.entity.position
-			if (v.username.startsWith(botprefix) && v.username !== bot.username) {
-				friendly2[v.username] = playerpos.toString()
-				//friendly2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
-			} else if (v.username !== bot.username) {
-				others2[v.username] = (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())
-				//others2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
-			}
-		} catch (error) {
-			// do nothing
-		}
-	})
-	//console.log(`uselessvar: ${uselessvar}, friendly: ${JSON.stringify(friendly2)}, others: ${JSON.stringify(others2)}`)
-	// check if theres any nearby allies
-	if (!isEmpty(others) && isEmpty(friendly) && uselessvar3 >= 10) {
-		var botpos = bot.entity.position
-		//console.log(botpos)
-		bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
-		uselessvar3 = 0
-	} else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 30) {
-		uselessvar3 = uselessvar3 + 1
-		uselessvar = uselessvar + 1
-		Object.entries(others2).forEach(([k,v]) => {
+setTimeout(function() {
+	bot.on('physicTick', () => {
+		var friendly2 = {}
+		var others2 = {}
+		Object.entries(bot.players).forEach(([k,v]) => {
 			try {
-				var botpos = bot.entity.position
-				var thevpos = bot.players[k].entity.position
-				if (thevpos.x.toFixed() - botpos.x.toFixed() > 0) {
-					if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
-						var posX = thevpos.x.toFixed() - botpos.x.toFixed()
-						var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
-						console.log(`${k} : ${posX} ${posZ}`)
-						if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
-							bot.pathfinder.stop()
-							bot.pathfinder.setMovements(defaultMove)
-							bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z - 4, 1))
-						}
-					} else { 
-						var posX = thevpos.x.toFixed() - botpos.x.toFixed()
-						var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
-						console.log(`${k} : ${posX} -${posZ}`)
-						if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
-							bot.pathfinder.stop()
-							bot.pathfinder.setMovements(defaultMove)
-							bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z + 4, 1))
-						}
-					}
-				} else {
-					if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
-						var posX = botpos.x.toFixed() - thevpos.x.toFixed()
-						var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
-						console.log(`${k} : -${posX} ${posZ}`)
-						if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
-							bot.pathfinder.stop()
-							bot.pathfinder.setMovements(defaultMove)
-							bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z - 4, 1))
-						}
-					} else {
-						var posX = botpos.x.toFixed() - thevpos.x.toFixed()
-						var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
-						console.log(`${k} : -${posX} -${posZ}`)
-						if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
-							bot.pathfinder.stop()
-							bot.pathfinder.setMovements(defaultMove)
-							bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z + 4, 1))
-						}
-					}
+				playerpos = v.entity.position
+				if (v.username.startsWith(botprefix) && v.username !== bot.username) {
+					friendly2[v.username] = playerpos.toString()
+					//friendly2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
+				} else if (v.username !== bot.username) {
+					others2[v.username] = (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())
+					//others2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
 				}
 			} catch (error) {
 				// do nothing
 			}
 		})
-	} else {
-		uselessvar = uselessvar + 1
-		/*
-		console.log('nope')
-		Object.entries(others2).forEach(([k,v]) => {
-			console.log("penemy")
-		})
-		*/
-	}
-	others = others2
-	friendly = friendly2
-})
+		//console.log(`uselessvar: ${uselessvar}, friendly: ${JSON.stringify(friendly2)}, others: ${JSON.stringify(others2)}`)
+		// check if theres any nearby allies
+		if (!isEmpty(others) && isEmpty(friendly) && uselessvar3 >= 10) {
+			var botpos = bot.entity.position
+			//console.log(botpos)
+			bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
+			uselessvar3 = 0
+		} else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 30) {
+			uselessvar3 = uselessvar3 + 1
+			uselessvar = uselessvar + 1
+			Object.entries(others2).forEach(([k,v]) => {
+				try {
+					var botpos = bot.entity.position
+					var thevpos = bot.players[k].entity.position
+					if (thevpos.x.toFixed() - botpos.x.toFixed() > 0) {
+						if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
+							var posX = thevpos.x.toFixed() - botpos.x.toFixed()
+							var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
+							console.log(`${k} : ${posX} ${posZ}`)
+							if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
+								bot.pathfinder.stop()
+								bot.pathfinder.setMovements(defaultMove)
+								bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z - 4, 1))
+							}
+						} else { 
+							var posX = thevpos.x.toFixed() - botpos.x.toFixed()
+							var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
+							console.log(`${k} : ${posX} -${posZ}`)
+							if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
+								bot.pathfinder.stop()
+								bot.pathfinder.setMovements(defaultMove)
+								bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z + 4, 1))
+							}
+						}
+					} else {
+						if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
+							var posX = botpos.x.toFixed() - thevpos.x.toFixed()
+							var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
+							console.log(`${k} : -${posX} ${posZ}`)
+							if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
+								bot.pathfinder.stop()
+								bot.pathfinder.setMovements(defaultMove)
+								bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z - 4, 1))
+							}
+						} else {
+							var posX = botpos.x.toFixed() - thevpos.x.toFixed()
+							var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
+							console.log(`${k} : -${posX} -${posZ}`)
+							if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
+								bot.pathfinder.stop()
+								bot.pathfinder.setMovements(defaultMove)
+								bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z + 4, 1))
+							}
+						}
+					}
+				} catch (error) {
+					// do nothing
+				}
+			})
+		} else {
+			uselessvar = uselessvar + 1
+			/*
+			console.log('nope')
+			Object.entries(others2).forEach(([k,v]) => {
+				console.log("penemy")
+			})
+			*/
+		}
+		others = others2
+		friendly = friendly2
+	})
+}, 10000)
 
 bot.on('chat', (username, message) => {
 	if (username === bot.username) return
