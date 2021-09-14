@@ -11,6 +11,7 @@ const pvp = require('mineflayer-pvp').plugin
 var sleep = require('sleep');
 const vec3 = require('vec3')
 var args = process.argv.slice(2);
+require('events').EventEmitter.prototype._maxListeners = Infinity;
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
