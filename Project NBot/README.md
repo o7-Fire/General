@@ -16,39 +16,39 @@ all commands are only runnable by the botowner name\
 command (args1) = required arguments\
 command {args1} = not required but allowed\
 \
-say (message)
-- makes the bot chat the message
+say (message)\
+    makes the bot chat the message\
 \
-bot comexyz (x) (y) (z)
-- makes the bot pathfind to the xyz coordinates
+bot comexyz (x) (y) (z)\
+    makes the bot pathfind to the xyz coordinates\
 \
-bot come (botname), bot come all
-- makes the bot pathfind to your position
+bot come (botname), bot come all\
+    makes the bot pathfind to your position\
 \
-eval (code)
-- runs a javascript code on the bot. if code errors, it will display in chat
+eval (code)\
+    runs a javascript code on the bot. if code errors, it will display in chat\
 \
-equiparmor
-- equips best armor. sometimes doesnt wear best armor
+equiparmor\
+    equips best armor. sometimes doesnt wear best armor\
 \
-bot roam
-- turns roaming on and off
-- walk randomly
+bot roam\
+    turns roaming on and off\
+    walk randomly\
 \
-bot autofish
-- turns autofishing on and off
-- makes the bot look at water and start auto fishing
+bot autofish\
+    turns autofishing on and off\
+    makes the bot look at water and start auto fishing\
 \
-bot attack (targetname)
-- attacks a player using the item currently held by the bot
-- for better effect, equip a weapon first
+bot attack (targetname)\
+    attacks a player using the item currently held by the bot\
+    for better effect, equip a weapon first\
 \
-equipblock (itemname)
-- equips an item onto the bot's hand
+equipblock (itemname)\
+    equips an item onto the bot's hand\
 \
-throwblock (itemname)
-- drops an item from the bot's inventory
+throwblock (itemname)\
+    drops an item from the bot's inventory\
 \
-tellinventory
-- tells what item is inside the bot's inventory
+tellinventory\
+    tells what item is inside the bot's inventory
 
