@@ -16,39 +16,39 @@ all commands are only runnable by the botowner name\
 command (args1) = required arguments\
 command {args1} = not required but allowed\
 \
-say (message)\
+say (message)
 - makes the bot chat the message
 \
-bot comexyz (x) (y) (z)\
+bot comexyz (x) (y) (z)
 - makes the bot pathfind to the xyz coordinates
 \
-bot come (botname), bot come all\
+bot come (botname), bot come all
 - makes the bot pathfind to your position
 \
-eval (code)\
+eval (code)
 - runs a javascript code on the bot. if code errors, it will display in chat
 \
-equiparmor\
+equiparmor
 - equips best armor. sometimes doesnt wear best armor
 \
-bot roam\
+bot roam
 - turns roaming on and off
 - walk randomly
 \
-bot autofish\
+bot autofish
 - turns autofishing on and off
 - makes the bot look at water and start auto fishing
 \
-bot attack (targetname)\
+bot attack (targetname)
 - attacks a player using the item currently held by the bot
 - for better effect, equip a weapon first
 \
-equipblock (itemname)\
+equipblock (itemname)
 - equips an item onto the bot's hand
 \
-throwblock (itemname)\
+throwblock (itemname)
 - drops an item from the bot's inventory
 \
-tellinventory\
+tellinventory
 - tells what item is inside the bot's inventory
 
