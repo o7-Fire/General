@@ -306,39 +306,6 @@ bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 	}
 });
 
-let guardPos = null
-
-// Assign the given location to be guarded
-function guardArea (pos) {
-  guardPos = pos
-
-  // We we are not currently in combat, move to the guard pos
-  if (!bot.pvp.target) {
-    moveToGuardPos()
-  }
-}
-
-// Cancel all pathfinder and combat
-function stopGuarding () {
-  guardPos = null
-  bot.pvp.stop()
-  bot.pathfinder.setGoal(null)
-}
-
-// Pathfinder to the guard position
-function moveToGuardPos () {
-  const mcData = require('minecraft-data')(bot.version)
-  bot.pathfinder.setMovements(new Movements(bot, mcData))
-  bot.pathfinder.setGoal(new goals.GoalBlock(guardPos.x, guardPos.y, guardPos.z))
-}
-
-// Called when the bot has killed it's target.
-bot.on('stoppedAttacking', () => {
-  if (guardPos) {
-    moveToGuardPos()
-  }
-})
-
 // Check for new enemies to attack
 bot.on('physicsTick', () => {
   if (!guardPos) return // Do nothing if bot is not guarding anything
