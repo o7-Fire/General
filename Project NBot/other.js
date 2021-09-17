@@ -325,6 +325,10 @@ bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
 	}
 });
 
+bot.on('message', (message) => {
+  console.log(message.toAnsi())
+})
+
 function autototem() {
 	setTimeout(function() {
 		var ifhas = 0
