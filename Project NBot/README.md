@@ -1,4 +1,14 @@
-# TODO: minecraft hivemind bot that if one person gets attacked, they will attack back in numbers
+# TODO 
+\
+minecraft hivemind bot that if one person gets attacked, they will attack back in numbers
+\
+lumberjack command
+\
+self-defense for bots
+\
+mineflayer/discord.js communication
+
+# h
 \
 https://github.com/PrismarineJS/mineflayer
 \
