@@ -7,6 +7,12 @@ lumberjack command
 self-defense for bots
 \
 mineflayer/discord.js communication
+\
+disable what the bot is doing before executing the command to prevent it from crashing
+\
+make the bot walk every 10 minutes to prevent it from getting disconnected and back to its original position
+\
+online mode version????? 
 
 # h
 \
