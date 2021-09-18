@@ -1,4 +1,8 @@
 const mineflayer = require('mineflayer')
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+const fs = require('fs')
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
 const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathfinder')
 const navigatePlugin = require('mineflayer-navigate')(mineflayer);
@@ -11,7 +15,6 @@ const pvp = require('mineflayer-pvp').plugin
 var sleep = require('sleep');
 const vec3 = require('vec3')
 var args = process.argv.slice(2);
-
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -58,7 +61,7 @@ function isEmpty(obj) {
 }
 
 const bot = mineflayer.createBot({
-  host: '',
+  host: 'shadow01148.aternos.me',
   username: (args[0]),
   version: '1.16.5',
   port: 28415
@@ -94,6 +97,7 @@ bot.loadPlugin(blockFinderPlugin);
 //bot.loadPlugin(autoCrystal)
 bloodhoundPlugin(bot);
 bot.bloodhound.yaw_correlation_enabled = true;
+let mcAssets = require('minecraft-assets')(bot.version)
 
 const defaultMove = new Movements(bot, mcData)
 
@@ -104,6 +108,17 @@ bot.once('spawn', () => {
 */
 
 bot.once('spawn', () => {
+	var inventory = ""
+	Object.entries(bot.inventory.items()).forEach(([k,v]) => { 
+		inventory = inventory + `${v.count} ${v.name} (${v.type}) : ${v.slot}<br/>` 
+	})
+	
+	app.get ('/', function(req, res){
+		res.send(`Bot Name: ${args[0]}<br/><br/>Inventory: amount name (id) : slotnumber<br/><br/>${inventory}`)
+	});
+	http.listen(5000 + Number.parseInt(args[0].replace(botprefix, "")), function(){
+		// do nothing
+	});
 	bot.autoEat.options.priority = "foodPoints"
 	bot.autoEat.options.bannedFood = []
 	bot.autoEat.options.eatingTimeout = 3
@@ -160,136 +175,10 @@ function theautofish() {
 }
 theautofish()
 
-function showVillagers () {
-	const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === mcData.entitiesByName.villager.id)
-	const closeVillagersId = villagers.filter(e => bot.entity.position.distanceTo(e.position) < 3).map(e => e.id)
-	bot.chat(`found ${villagers.length} villagers`)
-	bot.chat(`villager(s) you can trade with: ${closeVillagersId.join(', ')}`)
-}
-
-function showInventory () {
-	bot.inventory.slots
-	.filter(item => item).forEach((item) => {
-		bot.chat(stringifyItem(item))
-	})
-}
-
-async function showTrades (id) {
-	const e = bot.entities[id]
-	switch (true) {
-    		case !e:
-      			bot.chat(`cant find entity with id ${id}`)
-      			break
-    		case e.entityType !== mcData.entitiesByName.villager.id:
-      			bot.chat('entity is not a villager')
-      			break
-    		case bot.entity.position.distanceTo(e.position) > 3:
-      			bot.chat('villager out of reach')
-      			break
-    		default: {
-      			const villager = await bot.openVillager(e)
-      			villager.close()
-      			stringifyTrades(villager.trades).forEach((trade, i) => {
-        			bot.chat(`${i + 1}: ${trade}`)
-      			})
-    		}
-  	}
-}
-
-async function trade (id, index, count) {
-	const e = bot.entities[id]
-	switch (true) {
-    		case !e:
-      			bot.chat(`cant find entity with id ${id}`)
-      			break
-    		case e.entityType !== mcData.entitiesByName.villager.id:
-     			bot.chat('entity is not a villager')
-      			break
-    		case bot.entity.position.distanceTo(e.position) > 3:
-      			bot.chat('villager out of reach')
-      			break
-    	default: {
-      		const villager = await bot.openVillager(e)
-      		const trade = villager.trades[index - 1]
-      		count = count || trade.maxTradeuses - trade.tooluses
-      		switch (true) {
-        		case !trade:
-          			villager.close()
-          			bot.chat('trade not found')
-          			break
-        		case trade.disabled:
-          			villager.close()
-          			bot.chat('trade is disabled')
-          			break
-			case trade.maxTradeuses - trade.tooluses < count:
-          			villager.close()
-          			bot.chat('cant trade that often')
-          			break
-        		case !hasResources(villager.window, trade, count):
-          			villager.close()
-          			bot.chat('dont have the resources to do that trade')
-          			break
-        		default:
-          			bot.chat('starting to trade')
-          			try {
-            				await bot.trade(villager, index - 1, count)
-            				bot.chat(`traded ${count} times`)
-          			} catch (err) {
-            				bot.chat('an error acured while tyring to trade')
-           			 	console.log(err)
-          			}
-          			villager.close()
-			}
-		}
-	}
-
-	function hasResources (window, trade, count) {
-		const first = enough(trade.firstInput, count)
-		const second = !trade.hasSecondItem || enough(trade.secondaryInput, count)
-		return first && second
-
-		function enough (item, count) {
-			return window.count(item.type, item.metadata) >= item.count * count
-		}
-	}
-}
-
-function stringifyTrades (trades) {
-	return trades.map((trade) => {
-		let text = stringifyItem(trade.firstInput)
-		if (trade.secondaryInput) text += ` & ${stringifyItem(trade.secondaryInput)}`
-		if (trade.disabled) text += ' x '; else text += ' » '
-		text += stringifyItem(trade.output)
-		return `(${trade.tooluses}/${trade.maxTradeuses}) ${text}`
-  	})
-}
-
-function stringifyItem (item) {
-	if (!item) return 'nothing'
-	let text = `${item.count} ${item.displayName}`
-	if (item.nbt && item.nbt.value) {
-		const ench = item.nbt.value.ench
-		const StoredEnchantments = item.nbt.value.StoredEnchantments
-		const Potion = item.nbt.value.Potion
-		const display = item.nbt.value.display
-
-		if (Potion) text += ` of ${Potion.value.replace(/_/g, ' ').split(':')[1] || 'unknow type'}`
-		if (display) text += ` named ${display.value.Name.value}`
-		if (ench || StoredEnchantments) {
-			text += ` enchanted with ${(ench || StoredEnchantments).value.value.map((e) => {
-			const lvl = e.lvl.value
-			const id = e.id.value
-			return mcData.enchantments[id].displayName + ' ' + lvl
-			}).join(' ')}`
-		}
-	}
-	return text
-}
-
 bot.on("health", () => {
-	if (bot.food === 20) bot.autoEat.disable()
-	// Disable the plugin if the bot is at 20 food points
-	else bot.autoEat.enable() // Else enable the plugin again
+  if (bot.food === 20) bot.autoEat.disable()
+  // Disable the plugin if the bot is at 20 food points
+  else bot.autoEat.enable() // Else enable the plugin again
 })
 
 bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
@@ -442,22 +331,6 @@ setTimeout(function() {
 bot.on('chat', (username, message) => {
 	if (username === bot.username) return
 	if (username !== botowner) return
-	// todo fix this
-	const command = message.split(' ')
-	switch (true) {
-		case message === 'bot show villagers':
-			showVillagers()
-			break
-		case message === 'bot show inventory':
-			showInventory()
-			break
-		case /^show trades [0-9]+$/.test(message):
-			showTrades(command[2])
-			break
-		case /^trade [0-9]+ [0-9]+( [0-9]+)?$/.test(message):
-			trade(command[1], command[2], command[3])
-			break
-	}
 	if (message.startsWith("say")) {
 		bot.chat(message.replace("say ", ""))
 	}
@@ -561,7 +434,6 @@ bot.on('chat', (username, message) => {
 		}
 	}
 	
-	/*
 	if (message === "line up") {
 		const target = bot.players[username].entity
 		if (!target) {
@@ -571,9 +443,8 @@ bot.on('chat', (username, message) => {
 		const { x: playerX, y: playerY, z: playerZ } = target.position
 
 		bot.pathfinder.setMovements(defaultMove)
-		bot.pathfinder.setGoal(new GoalNear(playerX + args[0].substr(-3), playerY, playerZ, RANGE_GOAL))
+		bot.pathfinder.setGoal(new GoalNear(playerX + Number.parseInt(args[0].replace(botprefix, "")), playerY, playerZ, RANGE_GOAL))
 	}
-	*/
 	
 	if (message.startsWith("equipblock ")) {
 		var blocktoequip = message.replace("equipblock ", "");
