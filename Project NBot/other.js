@@ -1,18 +1,19 @@
 const mineflayer = require('mineflayer')
-const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
+const mineflayerViewer = require('prismarine-viewer').mineflayer
 const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathfinder')
 const navigatePlugin = require('mineflayer-navigate')(mineflayer);
 var bloodhoundPlugin = require('mineflayer-bloodhound')(mineflayer);
 const armorManager = require('mineflayer-armor-manager')
 const autoeat = require("mineflayer-auto-eat")
+const collectBlockPlugin = require('mineflayer-collectblock').plugin
 var blockFinderPlugin = require('mineflayer-blockfinder')(mineflayer);
+const { GoalBlock } = require('mineflayer-pathfinder').goals
 //const {autoCrystal} = require('mineflayer-autocrystal')
 const pvp = require('mineflayer-pvp').plugin
 var sleep = require('sleep');
+const { Vec3 } = require('vec3')
 const vec3 = require('vec3')
 var args = process.argv.slice(2);
-
-
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -20,659 +21,673 @@ function getRandomInt(min, max) {
 }
 
 function isEquivalent(a, b) {
-    // Create arrays of property names
-    var aProps = Object.getOwnPropertyNames(a);
-    var bProps = Object.getOwnPropertyNames(b);
+  // Create arrays of property names
+  var aProps = Object.getOwnPropertyNames(a);
+  var bProps = Object.getOwnPropertyNames(b);
 
-    // If number of properties is different,
+  // If number of properties is different,
+  // objects are not equivalent
+  if (aProps.length != bProps.length) {
+    return false;
+  }
+
+  for (var i = 0; i < aProps.length; i++) {
+    var propName = aProps[i];
+
+    // If values of same property are not equal,
     // objects are not equivalent
-    if (aProps.length != bProps.length) {
-        return false;
+    if (a[propName] !== b[propName]) {
+      return false;
     }
+  }
 
-    for (var i = 0; i < aProps.length; i++) {
-        var propName = aProps[i];
-
-        // If values of same property are not equal,
-        // objects are not equivalent
-        if (a[propName] !== b[propName]) {
-            return false;
-        }
-    }
-
-    // If we made it this far, objects
-    // are considered equivalent
-    return true;
+  // If we made it this far, objects
+  // are considered equivalent
+  return true;
 }
 
-function itemToString (item) {
-	if (item) {
-		return `${item.name} x ${item.count}`
-	} else {
-		return '(nothing)'
-	}
+function itemToString(item) {
+  if (item) {
+    return `${item.name} x ${item.count}`
+  } else {
+    return '(nothing)'
+  }
 }
 
 function isEmpty(obj) {
-	return Object.keys(obj).length === 0;
+  return Object.keys(obj).length === 0;
 }
 
-const bot = mineflayer.createBot({
-  host: '',
-  username: (args[0]),
-  version: '1.16.5',
-  port: 28415
-})
+  const bot = mineflayer.createBot({
+    host: 'shadow01148.aternos.me',
+    username: (args[0]),
+    version: '1.16.5',
+    port: 28415
+  })
 
-var botprefix = "NBot" // change this to something else if you want to change the name in main.py
-var botowner = "Nexity" // to prevent people hijacking your bot
-const mcData = require('minecraft-data')(bot.version)
-var pi = 3.14159;
-var isRoamingEnabled = false
-var isAutototemEnabled = false
-var isAutoFishingEnabled = false
-var others = {}
-var friendly = {}
-var uselessvar = 0
-var uselessvar2 = 0
-var uselessvar3 = 0
-var a1 = false
+  var botprefix = "nevbot" // change this to something else if you want to change the name in main.py
+  var botowner = "Server" // to prevent people hijacking your bot
+  const mcData = require('minecraft-data')(bot.version)
+  var pi = 3.14159;
+  var isRoamingEnabled = false
+  var isAutototemEnabled = false
+  var isAutoFishingEnabled = false
+  var others = {}
+  var friendly = {}
+  var uselessvar = 0
+  var uselessvar2 = 0
+  var uselessvar3 = 0
+  var a1 = false
 
-let itemsByName
-if (bot.supportFeature('itemsAreNotBlocks')) {
-	itemsByName = 'itemsByName'
-} else if (bot.supportFeature('itemsAreAlsoBlocks')) {
-	itemsByName = 'blocksByName'
-}
-		
-navigatePlugin(bot);
-bot.loadPlugin(pathfinder)
-bot.loadPlugin(pvp)
-bot.loadPlugin(armorManager);
-bot.loadPlugin(autoeat)
-bot.loadPlugin(blockFinderPlugin);
-//bot.loadPlugin(autoCrystal)
-bloodhoundPlugin(bot);
-bot.bloodhound.yaw_correlation_enabled = true;
-
-const defaultMove = new Movements(bot, mcData)
-
-/*
-bot.once('spawn', () => {
-  mineflayerViewer(bot, { port: 8090, firstPerson: true }) // port is the minecraft server port, if first person is false, you get a bird's-eye view
-})
-*/
-
-bot.once('spawn', () => {
-	bot.autoEat.options.priority = "foodPoints"
-	bot.autoEat.options.bannedFood = []
-	bot.autoEat.options.eatingTimeout = 3
-})
-
-function theautofish() {
-	setTimeout(function() {
-		if (isAutoFishingEnabled && a1 === false) {
-			var istherenearbywater = false
-			bot.findBlock({point: bot.entity.position, matching: 8, maxDistance: 10, count: 1,}, function(err, blocks) {
-				if (err) {
-					bot.chat("error while trying to find water")
-				}
-				if (blocks.length) {
-					istherenearbywater = true
-					bot.lookAt(blocks[0].position)
-				} else {
-					//
-				}
-			});
-			bot.findBlock({point: bot.entity.position, matching: 9, maxDistance: 10, count: 1,}, function(err, blocks) {
-				if (err) {
-					bot.chat("error while trying to find water")
-				}
-				if (blocks.length) {
-					istherenearbywater = true
-					bot.lookAt(blocks[0].position)
-				} else {
-					//
-				}
-			});
-			setTimeout(function() {
-				bot.equip(bot.inventory.findInventoryItem("fishing_rod"), 'hand', (err) => {
-					if (err) {
-						bot.chat("no fishing rod in inventory")
-					} else {
-						function fishingEnd(err) {
-							if (err) throw err;
-
-							setTimeout(() => {
-								if (isAutoFishingEnabled) {
-									bot.fish(fishingEnd)
-								}
-							}, 30); //no problem
-						}
-						bot.fish(fishingEnd)
-					}
-				})
-			}, 3000)
-		}
-		a1 = isAutoFishingEnabled
-		theautofish()
-	}, 2000)
-}
-theautofish()
-
-function showVillagers () {
-	const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === mcData.entitiesByName.villager.id)
-	const closeVillagersId = villagers.filter(e => bot.entity.position.distanceTo(e.position) < 3).map(e => e.id)
-	bot.chat(`found ${villagers.length} villagers`)
-	bot.chat(`villager(s) you can trade with: ${closeVillagersId.join(', ')}`)
-}
-
-function showInventory () {
-	bot.inventory.slots
-	.filter(item => item).forEach((item) => {
-		bot.chat(stringifyItem(item))
-	})
-}
-
-async function showTrades (id) {
-	const e = bot.entities[id]
-	switch (true) {
-    		case !e:
-      			bot.chat(`cant find entity with id ${id}`)
-      			break
-    		case e.entityType !== mcData.entitiesByName.villager.id:
-      			bot.chat('entity is not a villager')
-      			break
-    		case bot.entity.position.distanceTo(e.position) > 3:
-      			bot.chat('villager out of reach')
-      			break
-    		default: {
-      			const villager = await bot.openVillager(e)
-      			villager.close()
-      			stringifyTrades(villager.trades).forEach((trade, i) => {
-        			bot.chat(`${i + 1}: ${trade}`)
-      			})
-    		}
-  	}
-}
-
-async function trade (id, index, count) {
-	const e = bot.entities[id]
-	switch (true) {
-    		case !e:
-      			bot.chat(`cant find entity with id ${id}`)
-      			break
-    		case e.entityType !== mcData.entitiesByName.villager.id:
-     			bot.chat('entity is not a villager')
-      			break
-    		case bot.entity.position.distanceTo(e.position) > 3:
-      			bot.chat('villager out of reach')
-      			break
-    	default: {
-      		const villager = await bot.openVillager(e)
-      		const trade = villager.trades[index - 1]
-      		count = count || trade.maxTradeuses - trade.tooluses
-      		switch (true) {
-        		case !trade:
-          			villager.close()
-          			bot.chat('trade not found')
-          			break
-        		case trade.disabled:
-          			villager.close()
-          			bot.chat('trade is disabled')
-          			break
-			case trade.maxTradeuses - trade.tooluses < count:
-          			villager.close()
-          			bot.chat('cant trade that often')
-          			break
-        		case !hasResources(villager.window, trade, count):
-          			villager.close()
-          			bot.chat('dont have the resources to do that trade')
-          			break
-        		default:
-          			bot.chat('starting to trade')
-          			try {
-            				await bot.trade(villager, index - 1, count)
-            				bot.chat(`traded ${count} times`)
-          			} catch (err) {
-            				bot.chat('an error acured while tyring to trade')
-           			 	console.log(err)
-          			}
-          			villager.close()
-			}
-		}
-	}
-
-	function hasResources (window, trade, count) {
-		const first = enough(trade.firstInput, count)
-		const second = !trade.hasSecondItem || enough(trade.secondaryInput, count)
-		return first && second
-
-		function enough (item, count) {
-			return window.count(item.type, item.metadata) >= item.count * count
-		}
-	}
-}
-
-function stringifyTrades (trades) {
-	return trades.map((trade) => {
-		let text = stringifyItem(trade.firstInput)
-		if (trade.secondaryInput) text += ` & ${stringifyItem(trade.secondaryInput)}`
-		if (trade.disabled) text += ' x '; else text += ' » '
-		text += stringifyItem(trade.output)
-		return `(${trade.tooluses}/${trade.maxTradeuses}) ${text}`
-  	})
-}
-
-function stringifyItem (item) {
-	if (!item) return 'nothing'
-	let text = `${item.count} ${item.displayName}`
-	if (item.nbt && item.nbt.value) {
-		const ench = item.nbt.value.ench
-		const StoredEnchantments = item.nbt.value.StoredEnchantments
-		const Potion = item.nbt.value.Potion
-		const display = item.nbt.value.display
-
-		if (Potion) text += ` of ${Potion.value.replace(/_/g, ' ').split(':')[1] || 'unknow type'}`
-		if (display) text += ` named ${display.value.Name.value}`
-		if (ench || StoredEnchantments) {
-			text += ` enchanted with ${(ench || StoredEnchantments).value.value.map((e) => {
-			const lvl = e.lvl.value
-			const id = e.id.value
-			return mcData.enchantments[id].displayName + ' ' + lvl
-			}).join(' ')}`
-		}
-	}
-	return text
-}
-
-bot.on("health", () => {
-	if (bot.food === 20) bot.autoEat.disable()
-	// Disable the plugin if the bot is at 20 food points
-	else bot.autoEat.enable() // Else enable the plugin again
-})
-
-bot.on('onCorrelateAttack', function (attacker,victim,weapon) {
-	if ((victim.displayName || victim.username).startsWith(botprefix)) {
-		if ((attacker.displayName || attacker.username).startsWith(botprefix)) {
-
-		} else {
-			//bot.chat(`${(victim.displayName || victim.username)} is getting attacked by ${(attacker.displayName || attacker.username)}`)
-			bot.pvp.attack(attacker)
-		}
-	}
-	if ((attacker.displayName || attacker.username) === botowner && !(victim.displayName || victim.username).startsWith(botprefix)) {
-		bot.pvp.attack(victim)
-	}
-});
-
-// Check for new enemies to attack
-bot.on('physicsTick', () => {
-  if (!guardPos) return // Do nothing if bot is not guarding anything
-
-  // Only look for mobs within 16 blocks
-  const filter = e => e.type === 'mob' && e.position.distanceTo(bot.entity.position) < 20 &&
-                    e.mobType !== 'Armor Stand' // Mojang classifies armor stands as mobs for some reason?
-
-  const entity = bot.nearestEntity(filter)
-  if (entity) {
-    // Start attacking
-    bot.pvp.attack(entity)
+  let itemsByName
+  if (bot.supportFeature('itemsAreNotBlocks')) {
+    itemsByName = 'itemsByName'
+  } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
+    itemsByName = 'blocksByName'
   }
+
+  navigatePlugin(bot);
+  bot.loadPlugin(pathfinder)
+  bot.loadPlugin(pvp)
+  bot.loadPlugin(armorManager);
+  bot.loadPlugin(autoeat)
+  bot.loadPlugin(blockFinderPlugin);
+  bot.loadPlugin(collectBlockPlugin);
+  //bot.loadPlugin(autoCrystal)
+  bloodhoundPlugin(bot);
+  bot.bloodhound.yaw_correlation_enabled = true;
+
+  const defaultMove = new Movements(bot, mcData)
+
+  bot.once('spawn', () => {
+    bot.autoEat.options.priority = "foodPoints"
+    bot.autoEat.options.bannedFood = []
+    bot.autoEat.options.eatingTimeout = 3
+  })
+
+  function theautofish() {
+    setTimeout(function () {
+      if (isAutoFishingEnabled && a1 === false) {
+        var istherenearbywater = false
+        bot.findBlock({ point: bot.entity.position, matching: 8, maxDistance: 10, count: 1, }, function (err, blocks) {
+          if (err) {
+            bot.chat("error while trying to find water")
+          }
+          if (blocks.length) {
+            istherenearbywater = true
+            bot.lookAt(blocks[0].position)
+          } else {
+            //
+          }
+        });
+        bot.findBlock({ point: bot.entity.position, matching: 9, maxDistance: 10, count: 1, }, function (err, blocks) {
+          if (err) {
+            bot.chat("error while trying to find water")
+          }
+          if (blocks.length) {
+            istherenearbywater = true
+            bot.lookAt(blocks[0].position)
+          } else {
+            //
+          }
+        });
+        setTimeout(function () {
+          bot.equip(bot.inventory.findInventoryItem("fishing_rod"), 'hand', (err) => {
+            if (err) {
+              bot.chat("no fishing rod in inventory")
+            } else {
+              function fishingEnd(err) {
+                if (err) throw err;
+
+                setTimeout(() => {
+                  if (isAutoFishingEnabled) {
+                    bot.fish(fishingEnd)
+                  }
+                }, 30); //no problem
+              }
+              bot.fish(fishingEnd)
+            }
+          })
+        }, 3000)
+      }
+      a1 = isAutoFishingEnabled
+      theautofish()
+    }, 2000)
+  }
+  theautofish()
+  
+bot.once('spawn', () => {
+  mineflayerViewer(bot, { port: 3007, firstPerson: false })
 })
 
-// Listen for player commands
-bot.on('chat', (username, message) => {
-  // Guard the location the player is standing
-  if (message === 'bot guard') {
-    const player = bot.players[username]
+  bot.once('spawn', function () {
+  setInterval(() => {
+    const entity = bot.nearestEntity()
+    if (entity !== null) {
+      if (entity.type === 'player') {
+        bot.lookAt(entity.position.offset(0, 1.6, 0))
+      } else if (entity.type === 'mob') {
+        bot.lookAt(entity.position)
+      }
+    }
+  }, 50)
+})
 
-    if (!player) {
-      bot.chat("I can't see you.")
-      return
+// Listen for when a player says "bot collect [something]" in chat
+bot.on('chat', (username, message) => {
+  const args = message.split(' ')
+  if (args[0] !== 'collect') return
+
+  // Get the correct block type
+  const blockType = mcData.blocksByName[args[1]]
+  if (!blockType) {
+    bot.chat("I don't know any blocks with that name.")
+    return
+  }
+
+  bot.chat('Collecting the nearest ' + blockType.name)
+
+  // Try and find that block type in the world
+  const block = bot.findBlock({
+    matching: blockType.id,
+    maxDistance: 64
+  })
+
+  if (!block) {
+    bot.chat("I don't see that block nearby.")
+    return
+  }
+
+  // Collect the block if we found one
+  bot.collectBlock.collect(block, err => {
+    if (err) bot.chat(err.message)
+  })
+})
+
+  bot.on('chat', (username, message) => {
+    if (username === bot.username) return
+    const command = message.split(' ')
+    switch (true) {
+      case message === 'bot show villagers':
+        showVillagers()
+        break
+      case message === 'bot show inventory':
+        showInventory()
+        break
+      case /^show trades [0-9]+$/.test(message):
+        showTrades(command[2])
+        break
+      case /^trade [0-9]+ [0-9]+( [0-9]+)?$/.test(message):
+        trade(command[1], command[2], command[3])
+        break
+    }
+  })
+
+  function showVillagers() {
+    const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === mcData.entitiesByName.villager.id)
+    const closeVillagersId = villagers.filter(e => bot.entity.position.distanceTo(e.position) < 3).map(e => e.id)
+    bot.chat(`found ${villagers.length} villagers`)
+    bot.chat(`villager(s) you can trade with: ${closeVillagersId.join(', ')}`)
+  }
+
+  function showInventory() {
+    bot.inventory.slots
+      .filter(item => item).forEach((item) => {
+        bot.chat(stringifyItem(item))
+      })
+  }
+
+  async function showTrades(id) {
+    const e = bot.entities[id]
+    switch (true) {
+      case !e:
+        bot.chat(`cant find entity with id ${id}`)
+        break
+      case e.entityType !== mcData.entitiesByName.villager.id:
+        bot.chat('entity is not a villager')
+        break
+      case bot.entity.position.distanceTo(e.position) > 3:
+        bot.chat('villager out of reach')
+        break
+      default: {
+        const villager = await bot.openVillager(e)
+        villager.close()
+        stringifyTrades(villager.trades).forEach((trade, i) => {
+          bot.chat(`${i + 1}: ${trade}`)
+        })
+      }
+    }
+  }
+
+  async function trade(id, index, count) {
+    const e = bot.entities[id]
+    switch (true) {
+      case !e:
+        bot.chat(`cant find entity with id ${id}`)
+        break
+      case e.entityType !== mcData.entitiesByName.villager.id:
+        bot.chat('entity is not a villager')
+        break
+      case bot.entity.position.distanceTo(e.position) > 3:
+        bot.chat('villager out of reach')
+        break
+      default: {
+        const villager = await bot.openVillager(e)
+        const trade = villager.trades[index - 1]
+        count = count || trade.maxTradeuses - trade.tooluses
+        switch (true) {
+          case !trade:
+            villager.close()
+            bot.chat('trade not found')
+            break
+          case trade.disabled:
+            villager.close()
+            bot.chat('trade is disabled')
+            break
+          case trade.maxTradeuses - trade.tooluses < count:
+            villager.close()
+            bot.chat('cant trade that often')
+            break
+          case !hasResources(villager.window, trade, count):
+            villager.close()
+            bot.chat('dont have the resources to do that trade')
+            break
+          default:
+            bot.chat('starting to trade')
+            try {
+              await bot.trade(villager, index - 1, count)
+              bot.chat(`traded ${count} times`)
+            } catch (err) {
+              bot.chat('an error acured while tyring to trade')
+              console.log(err)
+            }
+            villager.close()
+        }
+      }
     }
 
-    bot.chat('I will guard that location.')
-    guardArea(player.entity.position)
+    function hasResources(window, trade, count) {
+      const first = enough(trade.firstInput, count)
+      const second = !trade.hasSecondItem || enough(trade.secondaryInput, count)
+      return first && second
+
+      function enough(item, count) {
+        return window.count(item.type, item.metadata) >= item.count * count
+      }
+    }
   }
 
-  // Stop guarding
-  if (message === 'bot stop guard') {
-    bot.chat('I will no longer guard this area.')
-    stopGuarding()
+  function stringifyTrades(trades) {
+    return trades.map((trade) => {
+      let text = stringifyItem(trade.firstInput)
+      if (trade.secondaryInput) text += ` & ${stringifyItem(trade.secondaryInput)}`
+      if (trade.disabled) text += ' x '; else text += ' » '
+      text += stringifyItem(trade.output)
+      return `(${trade.tooluses}/${trade.maxTradeuses}) ${text}`
+    })
   }
-})
 
-function autototem() {
-	setTimeout(function() {
-		var ifhas = 0
-		var items = bot.inventory.items()
-		var arrayLength = items.length;
-		for (var i = 0; i < arrayLength; i++) {
-			var theitem = items[i]
-			if (theitem.name === "totem_of_undying") { 
-				ifhas = 1
-			}
-		}
-		if (ifhas === 0) {
-			//bot.chat("/give @s totem_of_undying")
-		}
-		if (isAutototemEnabled) {
-			const totemName = 'totem_of_undying'
-			const totem = bot.inventory.items().find(item => item.name === totemName)
+  function stringifyItem(item) {
+    if (!item) return 'nothing'
+    let text = `${item.count} ${item.displayName}`
+    if (item.nbt && item.nbt.value) {
+      const ench = item.nbt.value.ench
+      const StoredEnchantments = item.nbt.value.StoredEnchantments
+      const Potion = item.nbt.value.Potion
+      const display = item.nbt.value.display
 
-			if (totem && !bot.inventory.slots[45]) {
-				try{ bot.equip(totem, 'off-hand') } catch (error) {}
-			} else if (totem && bot.inventory.slots[45] && bot.inventory.slots[45].name !== totemName) {
-				try { bot.equip(totem, 'off-hand') } catch (error) {}
-			}
-		}
-		autototem()
-	}, 500)
-}
-setTimeout(function() { autototem() }, 5000)
+      if (Potion) text += ` of ${Potion.value.replace(/_/g, ' ').split(':')[1] || 'unknow type'}`
+      if (display) text += ` named ${display.value.Name.value}`
+      if (ench || StoredEnchantments) {
+        text += ` enchanted with ${(ench || StoredEnchantments).value.value.map((e) => {
+          const lvl = e.lvl.value
+          const id = e.id.value
+          return mcData.enchantments[id].displayName + ' ' + lvl
+        }).join(' ')}`
+      }
+    }
+    return text
+  }
+  bot.on("health", () => {
+    if (bot.food === 20) bot.autoEat.disable()
+    // Disable the plugin if the bot is at 20 food points
+    else bot.autoEat.enable() // Else enable the plugin again
+  })
 
-bot.on('physicTick', () => {
-	
-	if (isRoamingEnabled) {
-		if (bot.time.time - uselessvar2 > 80) {
-			uselessvar2 = bot.time.time
-			var tpos = bot.entity.position
-			bot.pathfinder.stop()
-			bot.pathfinder.setMovements(defaultMove)
-			bot.pathfinder.setGoal(new GoalNear(tpos.x + getRandomInt(0, 10) - 5, tpos.y, tpos.z + getRandomInt(0, 10) - 5))
-		}
-	}
-})
-	
-setTimeout(function() {
-	bot.on('physicTick', () => {
-		var friendly2 = {}
-		var others2 = {}
-		Object.entries(bot.players).forEach(([k,v]) => {
-			try {
-				playerpos = v.entity.position
-				if (v.username.startsWith(botprefix) && v.username !== bot.username) {
-					friendly2[v.username] = playerpos.toString()
-					//friendly2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
-				} else if (v.username !== bot.username) {
-					others2[v.username] = (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())
-					//others2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
-				}
-			} catch (error) {
-				// do nothing
-			}
-		})
-		//console.log(`uselessvar: ${uselessvar}, friendly: ${JSON.stringify(friendly2)}, others: ${JSON.stringify(others2)}`)
-		// check if theres any nearby allies
-		if (!isEmpty(others) && isEmpty(friendly) && uselessvar3 >= 10) {
-			var botpos = bot.entity.position
-			//console.log(botpos)
-			bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
-			uselessvar3 = 0
-		} else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 30) {
-			uselessvar3 = uselessvar3 + 1
-			uselessvar = uselessvar + 1
-			Object.entries(others2).forEach(([k,v]) => {
-				try {
-					var botpos = bot.entity.position
-					var thevpos = bot.players[k].entity.position
-					if (thevpos.x.toFixed() - botpos.x.toFixed() > 0) {
-						if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
-							var posX = thevpos.x.toFixed() - botpos.x.toFixed()
-							var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
-							console.log(`${k} : ${posX} ${posZ}`)
-							if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z - 4, 1))
-							}
-						} else { 
-							var posX = thevpos.x.toFixed() - botpos.x.toFixed()
-							var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
-							console.log(`${k} : ${posX} -${posZ}`)
-							if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z + 4, 1))
-							}
-						}
-					} else {
-						if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
-							var posX = botpos.x.toFixed() - thevpos.x.toFixed()
-							var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
-							console.log(`${k} : -${posX} ${posZ}`)
-							if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z - 4, 1))
-							}
-						} else {
-							var posX = botpos.x.toFixed() - thevpos.x.toFixed()
-							var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
-							console.log(`${k} : -${posX} -${posZ}`)
-							if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
-								bot.pathfinder.stop()
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z + 4, 1))
-							}
-						}
-					}
-				} catch (error) {
-					// do nothing
-				}
-			})
-		} else {
-			uselessvar = uselessvar + 1
-			/*
-			console.log('nope')
-			Object.entries(others2).forEach(([k,v]) => {
-				console.log("penemy")
-			})
-			*/
-		}
-		others = others2
-		friendly = friendly2
-	})
-}, 10000)
+  bot.on('onCorrelateAttack', function (attacker, victim, weapon) {
+    if ((victim.displayName || victim.username).startsWith(botprefix)) {
+      if ((attacker.displayName || attacker.username).startsWith(botprefix)) {
 
-bot.on('chat', (username, message) => {
-	if (username === bot.username) return
-	if (username !== botowner) return
-	// todo fix this
-	const command = message.split(' ')
-	switch (true) {
-		case message === 'bot show villagers':
-			showVillagers()
-			break
-		case message === 'bot show inventory':
-			showInventory()
-			break
-		case /^show trades [0-9]+$/.test(message):
-			showTrades(command[2])
-			break
-		case /^trade [0-9]+ [0-9]+( [0-9]+)?$/.test(message):
-			trade(command[1], command[2], command[3])
-			break
-	}
-	if (message.startsWith("say")) {
-		bot.chat(message.replace("say ", ""))
-	}
-	
-	if (message.startsWith("bot comexyz ")) {
-		const thename = message.split(" ")[2]
-		const x = message.split(" ")[3]
-		const y = message.split(" ")[4]
-		const z = message.split(" ")[5]
-		if (thename === bot.username || thename === "all") {
-			bot.pathfinder.stop()
-			bot.pathfinder.setMovements(defaultMove)
-			bot.pathfinder.setGoal(new GoalNear(x, y, z, 1))
-		}
-	}
-	
-	if (message.startsWith("bot come ")) {
-		const thename = message.split("bot come ")[1]
-		if (thename === bot.username || thename === "all") {
-			const target = bot.players[username].entity
-			if (!target) {
-				bot.chat("I don't see you !")
-				return
-			}
-			bot.pathfinder.stop()
-			const { x: playerX, y: playerY, z: playerZ } = target.position
+      } else {
+        //bot.chat(`${(victim.displayName || victim.username)} is getting attacked by ${(attacker.displayName || attacker.username)}`)
+        bot.pvp.attack(attacker)
+      }
+    }
+    if ((attacker.displayName || attacker.username) === botowner && !(victim.displayName || victim.username).startsWith(botprefix)) {
+      bot.pvp.attack(victim)
+    }
+  });
 
-			bot.pathfinder.setMovements(defaultMove)
-			bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, 1))
-		}
-	}
-	
-	if (message.startsWith("eval ")) {
-		var thecode = message.replace("eval ", "")
-		try {
-			eval(thecode)
-		} catch (error) {
-			bot.chat(error.toString())
-		}
-	}
-	
-	if (message === "equiparmor") {
-		bot.armorManager.equipAll()
-	}
-	
-	if (message.startsWith("botneedhelp ") && username.startsWith(botprefix)) {
-		var allypos = message.split(" ")
-		bot.pathfinder.stop()
-		bot.pathfinder.setMovements(defaultMove)
-		bot.pathfinder.setGoal(new GoalNear(allypos[1], allypos[2], allypos[3], 10))
-	}
-	
-	if (message === "zxc") {
-		var fmessage = `Visible: `
-		Object.entries(bot.players).forEach(([k,v]) => {
-			try {
-				var thevec3 = `${v.entity.position.x.toFixed()} ${v.entity.position.y.toFixed()} ${v.entity.position.z.toFixed()}`  
-				fmessage = fmessage + `${k} at ${thevec3}, `
-			} catch (error) {
-				// do nothing
-			}
-		})
-		bot.chat(fmessage)
-	}
-	
-	if (message === "bot roam") {
-		if (isRoamingEnabled) {
-			bot.chat("stopped roaming")
-			isRoamingEnabled = false
-		} else {
-			bot.chat("started roaming")
-			isRoamingEnabled = true
-		}
-	}
-	
-	if (message === "bot autototem") {
-		if (isAutototemEnabled) {
-			bot.chat("disabled auto-totem")
-			isAutototemEnabled = false
-		} else {
-			bot.chat("enabled auto-totem")
-			isAutototemEnabled = true
-		}
-	}
-	
-	if (message === "bot autofish") {
-		if (isAutoFishingEnabled) {
-			bot.chat("disabled auto-fish")
-			isAutoFishingEnabled = false
-		} else {
-			bot.chat("enabled auto-fish")
-			isAutoFishingEnabled = true
-		}
-	}
-	
-	if (message.startsWith("bot attack ")) {
-		try {
-			bot.pvp.attack(bot.players[message.split("bot attack ")[1]].entity)
-		} catch (error) {
-			bot.chat("Could not find person")
-		}
-	}
-	
-	/*
-	if (message === "line up") {
-		const target = bot.players[username].entity
-		if (!target) {
-		  bot.chat("I don't see you !")
-		  return
-		}
-		const { x: playerX, y: playerY, z: playerZ } = target.position
+  bot.on('message', (message) => {
+    console.log(message.toAnsi())
+  })
 
-		bot.pathfinder.setMovements(defaultMove)
-		bot.pathfinder.setGoal(new GoalNear(playerX + args[0].substr(-3), playerY, playerZ, RANGE_GOAL))
-	}
-	*/
-	
-	if (message.startsWith("equipblock ")) {
-		var blocktoequip = message.replace("equipblock ", "");
-		bot.equip(mcData[itemsByName][blocktoequip].id, 'hand', (err) => {
-			if (err) {
-				bot.chat(`unable to equip ${blocktoequip}: ${err.message}`)
-			} else {
-				bot.chat(`equipped ${blocktoequip}`)
-			}
-		})
-	}
-	
-	if (message.startsWith("throwblock ")) {
-		var args = message.split(" ");
-		try {
-			bot.toss(mcData[itemsByName][args[1]].id, null, args[2], (err) => {
-				if (err) {
-					bot.chat(`unable to throw ${blocktoequip}: ${err.message}`)
-				} else {
-					//bot.chat(`threw ${blocktoequip}`)
-				}
-			})
-		} catch (error) {
-			bot.chat("unable to find block / not enough arguments")
-		}
-	}
-	
-	if (message.startsWith("abuild ")) {
-		const messagesplit = message.split(" ") // below, 0 -1 1
-		const referenceBlock = bot.blockAt(bot.entity.position.offset(messagesplit[1], messagesplit[2], messagesplit[3]))
-		bot.on('move', pb)
-		function pb () {
-			bot.placeBlock(referenceBlock, vec3(0, 0, 1), (err) => {
-				if (err) {
-					console.log('cant')
-				}
-			})
-		}
-	}
-	
-	if (message === "tellinventory") {
-		items = bot.inventory.items()
-		const output = items.map(itemToString).join(', ')
-		if (output) {
-			bot.chat(output)
-		} else {
-			bot.chat('empty')
-		}
-	}
+  function autototem() {
+    setTimeout(function () {
+      var ifhas = 0
+      var items = bot.inventory.items()
+      var arrayLength = items.length;
+      for (var i = 0; i < arrayLength; i++) {
+        var theitem = items[i]
+        if (theitem.name === "totem_of_undying") {
+          ifhas = 1
+        }
+      }
+      if (ifhas === 0) {
+        //bot.chat("/give @s totem_of_undying")
+      }
+      if (isAutototemEnabled) {
+        const totemName = 'totem_of_undying'
+        const totem = bot.inventory.items().find(item => item.name === totemName)
 
-})
-	
-/*
-bot.on('end', function () {
-	console.log("Disconnected. Waiting 5 seconds")
-	sleep.sleep(5);
-	const shell = require('shelljs')
-	shell.exec('node main.js')
-	throw new Error("rejoining");
-});
-*/
+        if (totem && !bot.inventory.slots[45]) {
+          try { bot.equip(totem, 'off-hand') } catch (error) { }
+        } else if (totem && bot.inventory.slots[45] && bot.inventory.slots[45].name !== totemName) {
+          try { bot.equip(totem, 'off-hand') } catch (error) { }
+        }
+      }
+      autototem()
+    }, 500)
+  }
+  setTimeout(function () { autototem() }, 5000)
+
+  bot.on('physicTick', () => {
+
+    if (isRoamingEnabled) {
+      if (bot.time.time - uselessvar2 > 80) {
+        uselessvar2 = bot.time.time
+        var tpos = bot.entity.position
+        bot.pathfinder.stop()
+        bot.pathfinder.setMovements(defaultMove)
+        bot.pathfinder.setGoal(new GoalNear(tpos.x + getRandomInt(0, 10) - 5, tpos.y, tpos.z + getRandomInt(0, 10) - 5))
+      }
+    }
+  })
+
+  setTimeout(function () {
+    bot.on('physicTick', () => {
+      var friendly2 = {}
+      var others2 = {}
+      Object.entries(bot.players).forEach(([k, v]) => {
+        try {
+          playerpos = v.entity.position
+          if (v.username.startsWith(botprefix) && v.username !== bot.username) {
+            friendly2[v.username] = playerpos.toString()
+            //friendly2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
+          } else if (v.username !== bot.username) {
+            others2[v.username] = (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())
+            //others2.push({key: v.username, value: (playerpos.x.toFixed(), playerpos.y.toFixed(), playerpos.z.toFixed())})
+          }
+        } catch (error) {
+          // do nothing
+        }
+      })
+      //console.log(`uselessvar: ${uselessvar}, friendly: ${JSON.stringify(friendly2)}, others: ${JSON.stringify(others2)}`)
+      // check if theres any nearby allies
+      if (!isEmpty(others) && isEmpty(friendly) && uselessvar3 >= 10) {
+        var botpos = bot.entity.position
+        //console.log(botpos)
+        bot.chat(`botneedhelp ${botpos.x.toFixed()} ${botpos.y.toFixed()} ${botpos.z.toFixed()}`)
+        uselessvar3 = 0
+      } else if (!isEmpty(others) && isEmpty(friendly) && uselessvar === 30) {
+        uselessvar3 = uselessvar3 + 1
+        uselessvar = uselessvar + 1
+        Object.entries(others2).forEach(([k, v]) => {
+          try {
+            var botpos = bot.entity.position
+            var thevpos = bot.players[k].entity.position
+            if (thevpos.x.toFixed() - botpos.x.toFixed() > 0) {
+              if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
+                var posX = thevpos.x.toFixed() - botpos.x.toFixed()
+                var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
+                console.log(`${k} : ${posX} ${posZ}`)
+                if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
+                  bot.pathfinder.stop()
+                  bot.pathfinder.setMovements(defaultMove)
+                  bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z - 4, 1))
+                }
+              } else {
+                var posX = thevpos.x.toFixed() - botpos.x.toFixed()
+                var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
+                console.log(`${k} : ${posX} -${posZ}`)
+                if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
+                  bot.pathfinder.stop()
+                  bot.pathfinder.setMovements(defaultMove)
+                  bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z + 4, 1))
+                }
+              }
+            } else {
+              if (thevpos.z.toFixed() - botpos.z.toFixed() > 0) {
+                var posX = botpos.x.toFixed() - thevpos.x.toFixed()
+                var posZ = thevpos.z.toFixed() - botpos.z.toFixed()
+                console.log(`${k} : -${posX} ${posZ}`)
+                if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
+                  bot.pathfinder.stop()
+                  bot.pathfinder.setMovements(defaultMove)
+                  bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z - 4, 1))
+                }
+              } else {
+                var posX = botpos.x.toFixed() - thevpos.x.toFixed()
+                var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
+                console.log(`${k} : -${posX} -${posZ}`)
+                if (posX < 7 && posZ < 7 && posX > -7 && posZ > -7) {
+                  bot.pathfinder.stop()
+                  bot.pathfinder.setMovements(defaultMove)
+                  bot.pathfinder.setGoal(new GoalNear(botpos.x + 4, botpos.y, botpos.z + 4, 1))
+                }
+              }
+            }
+          } catch (error) {
+            // do nothing
+          }
+        })
+      } else {
+        uselessvar = uselessvar + 1
+        /*
+        console.log('nope')
+        Object.entries(others2).forEach(([k,v]) => {
+          console.log("penemy")
+        })
+        */
+      }
+      others = others2
+      friendly = friendly2
+    })
+  }, 10000)
+
+  bot.on('chat', (username, message) => {
+    if (username === bot.username) return
+    if (username !== botowner) return
+    if (message.startsWith("say")) {
+      bot.chat(message.replace("say ", ""))
+    }
+
+    if (message.startsWith("bot comexyz ")) {
+      const thename = message.split(" ")[2]
+      const x = message.split(" ")[3]
+      const y = message.split(" ")[4]
+      const z = message.split(" ")[5]
+      if (thename === bot.username || thename === "all") {
+        bot.pathfinder.stop()
+        bot.pathfinder.setMovements(defaultMove)
+        bot.pathfinder.setGoal(new GoalNear(x, y, z, 1))
+      }
+    }
+
+    if (message.startsWith("bot come ")) {
+      const thename = message.split("bot come ")[1]
+      if (thename === bot.username || thename === "all") {
+        const target = bot.players[username].entity
+        if (!target) {
+          bot.chat("I don't see you !")
+          return
+        }
+        bot.pathfinder.stop()
+        const { x: playerX, y: playerY, z: playerZ } = target.position
+
+        bot.pathfinder.setMovements(defaultMove)
+        bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, 1))
+      }
+    }
+
+    if (message.startsWith("eval ")) {
+      var thecode = message.replace("eval ", "")
+      try {
+        eval(thecode)
+      } catch (error) {
+        bot.chat(error.toString())
+      }
+    }
+
+    if (message === "equiparmor") {
+      bot.armorManager.equipAll()
+    }
+
+    if (message.startsWith("botneedhelp ") && username.startsWith(botprefix)) {
+      var allypos = message.split(" ")
+      bot.pathfinder.stop()
+      bot.pathfinder.setMovements(defaultMove)
+      bot.pathfinder.setGoal(new GoalNear(allypos[1], allypos[2], allypos[3], 10))
+    }
+
+    if (message === "zxc") {
+      var fmessage = `Visible: `
+      Object.entries(bot.players).forEach(([k, v]) => {
+        try {
+          var thevec3 = `${v.entity.position.x.toFixed()} ${v.entity.position.y.toFixed()} ${v.entity.position.z.toFixed()}`
+          fmessage = fmessage + `${k} at ${thevec3}, `
+        } catch (error) {
+          // do nothing
+        }
+      })
+      bot.chat(fmessage)
+    }
+
+    if (message === "bot roam") {
+      if (isRoamingEnabled) {
+        bot.chat("stopped roaming")
+        isRoamingEnabled = false
+      } else {
+        bot.chat("started roaming")
+        isRoamingEnabled = true
+      }
+    }
+
+    if (message === "bot autototem") {
+      if (isAutototemEnabled) {
+        bot.chat("disabled auto-totem")
+        isAutototemEnabled = false
+      } else {
+        bot.chat("enabled auto-totem")
+        isAutototemEnabled = true
+      }
+    }
+
+    if (message === "bot autofish") {
+      if (isAutoFishingEnabled) {
+        bot.chat("disabled auto-fish")
+        isAutoFishingEnabled = false
+      } else {
+        bot.chat("enabled auto-fish")
+        isAutoFishingEnabled = true
+      }
+    }
+
+    if (message.startsWith("bot attack ")) {
+      try {
+        bot.pvp.attack(bot.players[message.split("bot attack ")[1]].entity)
+      } catch (error) {
+        bot.chat("Could not find person")
+      }
+    }
+
+    /*
+    if (message === "line up") {
+      const target = bot.players[username].entity
+      if (!target) {
+        bot.chat("I don't see you !")
+        return
+      }
+      const { x: playerX, y: playerY, z: playerZ } = target.position
+  
+      bot.pathfinder.setMovements(defaultMove)
+      bot.pathfinder.setGoal(new GoalNear(playerX + args[0].substr(-3), playerY, playerZ, RANGE_GOAL))
+    }
+    */
+
+    if (message.startsWith("equipblock ")) {
+      var blocktoequip = message.replace("equipblock ", "");
+      bot.equip(mcData[itemsByName][blocktoequip].id, 'hand', (err) => {
+        if (err) {
+          bot.chat(`unable to equip ${blocktoequip}: ${err.message}`)
+        } else {
+          bot.chat(`equipped ${blocktoequip}`)
+        }
+      })
+    }
+
+    if (message.startsWith("throwblock ")) {
+      var args = message.split(" ");
+      try {
+        bot.toss(mcData[itemsByName][args[1]].id, null, args[2], (err) => {
+          if (err) {
+            bot.chat(`unable to throw ${blocktoequip}: ${err.message}`)
+          } else {
+            //bot.chat(`threw ${blocktoequip}`)
+          }
+        })
+      } catch (error) {
+        bot.chat("unable to find block / not enough arguments")
+      }
+    }
+
+    if (message.startsWith("abuild ")) {
+      const messagesplit = message.split(" ") // below, 0 -1 1
+      const referenceBlock = bot.blockAt(bot.entity.position.offset(messagesplit[1], messagesplit[2], messagesplit[3]))
+      bot.on('move', pb)
+      function pb() {
+        bot.placeBlock(referenceBlock, vec3(0, 0, 1), (err) => {
+          if (err) {
+            console.log('cant')
+          }
+        })
+      }
+    }
+
+    if (message === "tellinventory") {
+      items = bot.inventory.items()
+      const output = items.map(itemToString).join(', ')
+      if (output) {
+        bot.chat(output)
+      } else {
+        bot.chat('empty')
+      }
+    }
+
+  })
+
+  /*
+  bot.on('end', function () {
+    console.log("Disconnected. Waiting 5 seconds")
+    sleep.sleep(5);
+    const shell = require('shelljs')
+    shell.exec('node main.js')
+    throw new Error("rejoining");
+  });
+  */
+
 
 // Log errors and kick reasons:
 bot.on('kicked', console.log)
 bot.on('error', console.log)
+
