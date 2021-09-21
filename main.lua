@@ -1,6 +1,6 @@
 
 _G.Settings = {
-['Name'] = 'Plane Crazy o7',
+['Name'] = 'Plane Crazy',
 ['Intro'] = false,
 ['Keybind'] = 'P'
 }
@@ -181,11 +181,7 @@ Tab1:Label('Copy Builds')
 Tab1:Button('Copy', function()
 Copy()
 end)
---[[
-Tab1:Toggle('Epik Toggle', false, function(bool)
-print(bool)
-end)
-]]
+
 Tab1:TextBox('Name', 'Name Here', function(output)
 pcall(function()
 PersonCopy = Creation[output]
@@ -194,66 +190,10 @@ print(PersonCopy)
 print(PersonCopyName)
 end)
 end)
---[[
-Tab1:Dropdown('Epik Dropdown', {'Epic', 'Right?', 'Skillz'}, function(output)
-print(output)
-end)
-]]
+
 Tab1:Label('Made by Nexity#3200')
 
 local Tab2 = Library:CreateTab('Tab2')
 Tab2:Button('Destroy this GUI', function()
     game:GetService("CoreGui").ShadowLib:Destroy()
 end)
---[[
-Refresh example:
-
-local TabwithRefresh = Library:CreateTab('TabwithRefresh')
-
-local Dropdown = TabwithRefresh:Dropdown('Epik Dropdown', {'Epic', 'Right?', 'Skillz'}, function(output)
-print(output)
-end)
-
-wait(10)
-
-Dropdown:Refresh('OMG REFRESH', {'NANI', 'WHAT IS', 'THIS MAGIC?'}, function(output)
-print(output)
-print('lol')
-end)
-]]
-
--- wedges
--- wedge 1x1 : 7
--- wedge 1x2 : 17
--- wedge 1x3 : 31
--- wedge 1x4 : 87
---materials:
---A_2:Name
---Default:Default
---g:Glass
---c:Legacy Glass
---w:Wood
---e:Wooden Planks
---m:Metal
---t:Cobblestone
---v:Grass
---d:Diamond Plate
---f:Fabric
---s:Slate
---n:Corroded Metal
---z:Foil
---i:Ice
---x:Sand
---local A_1 = game:GetService("Workspace").PlayerAircraft.MrBlobFish13.BlockStd
---local A_2 = ""
---local Event = game:GetService("ReplicatedStorage").Remotes.Paint
---Event:FireServer(A_1, A_2)
-
---[[
-what has been done:
-block 1x1, 1x4, 1x7
-wedge 1x1 - 1x4
-half wedge (both), half block
-cyl 1x1 - 5x5
-motor, motor2, disconnecter
-]]
