@@ -61,10 +61,10 @@ function isEmpty(obj) {
 }
 
 const bot = mineflayer.createBot({
-  host: 'shadow01148.aternos.me',
+  host: 'testing2b.aternos.me',
   username: (args[0]),
   version: '1.16.5',
-  port: 28415
+  //port: 49884
 })
 
 var botprefix = "NBot" // change this to something else if you want to change the name in main.py
@@ -123,6 +123,21 @@ bot.once('spawn', () => {
 	bot.autoEat.options.bannedFood = []
 	bot.autoEat.options.eatingTimeout = 3
 })
+
+function quarry(x1, y1, z1, x2, y2, z2){
+	for (var newy = y1; newy < y2; newy++) {
+		for (var newx = x1; newx < x2; newx++) {
+			for (var newz = z1; newz < z2; newz++) {
+				if (bot.canDigBlock(bot.blockAt(new vec3(newx, newy, newz)))) {
+					bot.pathfinder.stop()
+					bot.pathfinder.setMovements(defaultMove)
+					bot.pathfinder.setGoal(new GoalNear(newx, newy, newz, 2))
+					bot.dig(bot.blockAt(new vec3(newx, newy, newz)))
+				}
+			}
+		}
+	}
+}
 
 function theautofish() {
 	setTimeout(function() {
@@ -635,6 +650,43 @@ bot.on('chat', (username, message) => {
 		} else {
 			bot.chat('empty')
 		}
+	}
+	
+	if (message.startsWith("bot mine ")) {
+		var blocktomine = message.replace("bot mine ", "")
+		var theid = mcData[itemsByName][blocktomine].id
+		console.log(theid)
+		function trymine() {
+			bot.findBlock({
+				point: bot.entity.position,
+				matching: theid,
+				maxDistance: 256,
+				count: 15,
+			}, function(err, blocks) {
+				if (err) {
+					bot.chat('Error trying to mine: ' + err);
+				}
+				if (blocks.length) {
+					var block = blocks[Math.floor(Math.random()*blocks.length)]
+					bot.pathfinder.stop()
+					bot.pathfinder.setMovements(defaultMove)
+					bot.pathfinder.setGoal(new GoalNear(block.position.x, block.position.y-1, block.position.z, 0))
+					function trymine2() {
+						setTimeout(function() {
+							if (bot.blockAt(new vec3(block.position.x, block.position.y, block.position.z)).name !== "air") {
+								trymine2()
+							} else {
+								trymine()
+							}
+						}, 100)
+					}
+					trymine2()
+				} else {
+					console.log("found none")
+				}
+			});
+		}
+		trymine()
 	}
 
 })
