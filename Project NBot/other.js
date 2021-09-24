@@ -704,5 +704,3 @@ bot.on('end', function () {
 // Log errors and kick reasons:
 bot.on('kicked', console.log)
 bot.on('error', console.log)
-
-createBot()
