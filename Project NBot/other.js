@@ -60,7 +60,6 @@ function isEmpty(obj) {
 	return Object.keys(obj).length === 0;
 }
 
-function createBot () {
 const bot = mineflayer.createBot({
   host: 'testing2b.aternos.me',
   username: (args[0]),
@@ -703,8 +702,7 @@ bot.on('end', function () {
 */
 
 // Log errors and kick reasons:
-  bot.on('error', (err) => console.log(err))
-  bot.on('end', createBot)
-}
+bot.on('kicked', console.log)
+bot.on('error', console.log)
 
 createBot()
