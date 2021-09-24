@@ -53,9 +53,6 @@ def logout(driver: uc.Chrome):
 
 
 email = ask('Enter your GMAIL address: ').split('@')[0].replace('.', '')
-emails = get_emails(email)
-for i in range(int(ask('Start creating account at what number: '))):
-    next(emails)
     
 write(
     f'That email address will be able to create {2**len(email)//2} accounts.')
@@ -67,8 +64,11 @@ for i in range(1, numaccounts+1):
     driver = uc.Chrome()
     print('\n')
     write(f'Creating account #{i}...')
+    emails = get_emails(email)
+    for i in range(random.randint(0, 2**len(email)//2)):
+        next(emails)
     email = next(emails) + '@gmail.com'
-    password = ''.join(random.choices(pwchars, k=8))
+    password = "dfbuhdfiund56348453f6734vv"
     month = random.choice(['January', 'February', 'March', 'April', 'May',
                            'June', 'July', 'August', 'September', 'October', 'November', 'December'])
     day = str(random.randint(1, 28))
