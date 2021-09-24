@@ -89,11 +89,7 @@ if (bot.supportFeature('itemsAreNotBlocks')) {
 }
 		
 navigatePlugin(bot);
-bot.loadPlugin(pathfinder)
-bot.loadPlugin(pvp)
-bot.loadPlugin(armorManager);
-bot.loadPlugin(autoeat)
-bot.loadPlugin(blockFinderPlugin);
+bot.loadPlugins([armorManager, pathfinder, autoeat, pvp, autoWeapon, blockFinderPlugin]);
 //bot.loadPlugin(autoCrystal)
 bloodhoundPlugin(bot);
 bot.bloodhound.yaw_correlation_enabled = true;
