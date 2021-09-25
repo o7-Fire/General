@@ -1,16 +1,19 @@
-const mineflayer = require('mineflayer')
 var express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs')
-const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
+
+const mineflayer = require('mineflayer')
+const mineflayerViewer = require('prismarine-viewer').mineflayer
 const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathfinder')
 const navigatePlugin = require('mineflayer-navigate')(mineflayer);
 var bloodhoundPlugin = require('mineflayer-bloodhound')(mineflayer);
 const armorManager = require('mineflayer-armor-manager')
 const autoeat = require("mineflayer-auto-eat")
 var blockFinderPlugin = require('mineflayer-blockfinder')(mineflayer);
+const inventoryViewer = require('mineflayer-web-inventory')
 //const {autoCrystal} = require('mineflayer-autocrystal')
 const pvp = require('mineflayer-pvp').plugin
+
 var sleep = require('sleep');
 const vec3 = require('vec3')
 var args = process.argv.slice(2);
@@ -108,8 +111,24 @@ curl -i -X POST -H "Content-Type: application/json" -d "{\"name\":\"Nexity\"}" h
 */
 
 bot.once('spawn', () => {
+    var botport = Number.parseInt(args[0].replace(botprefix, ""))
+
+    //inventory viewer
+    inventoryViewer(bot, {port: 5200 + botport})
+
+    //prismarine viewer
+    mineflayerViewer(bot, { port: 5100 + botport })
+    // Draw the path followed by the bot
+    const path = [bot.entity.position.clone()]
+    bot.on('move', () => {
+        if (path[path.length - 1].distanceTo(bot.entity.position) > 1) {
+            path.push(bot.entity.position.clone())
+            bot.viewer.drawLine('path', path)
+        }
+    })
+
+    // mainframe
 	var inventory = ""
-	var botport = 5000 + Number.parseInt(args[0].replace(botprefix, ""))
 	Object.entries(bot.inventory.items()).forEach(([k,v]) => {
 		inventory = inventory + `${v.count} ${v.name} (${v.type}) : ${v.slot}<br/>`
 	})
@@ -125,16 +144,24 @@ bot.once('spawn', () => {
     app.use(express.json());
 
 	app.get ('/', function(req, res){
-		res.send(`Bot Name: ${args[0]}<br/><br/>
-		<form method="post">
-          <label for="fsay">Bot say:</label>
-          <input type="text" id="fsay" name="message">
-        </form>
-		Go to <a href="http://localhost:${botport}/inventory">here</a> to see the bot inventory`)
+		res.send(`
+            Bot Name: ${args[0]}<br/><br/>
+            <form method="post">
+              <label for="fsay">Bot say:</label>
+              <input type="text" id="fsay" name="message">
+            </form>
+            Go to <a href="http://localhost:${5000 + botport}/inventory">here</a> to see the bot inventory<br/>
+            Go to <a href="http://localhost:${5100 + botport}"here</a> to see prismarine viewer<br/>
+            Go to <a href="http://localhost:${5200 + botport}"here</a> to see bot inventory (images)<br/>
+		`)
 	});
 	app.get('/inventory', function(req, res){
 	    //res.send(`ok`)
-        res.send(`Bot Name: ${args[0]}<br/><br/>Inventory: amount name (id) : slotnumber<br/><br/>${inventory}`)
+        res.send(`
+            Bot Name: ${args[0]}<br/>
+            <a href="http://localhost:${5000 + botport}">go back</a><br/><br/>
+            Inventory: amount name (id) : slotnumber<br/><br/>${inventory}
+        `)
     });
 
     app.post('/', (req, res) => {
@@ -142,9 +169,9 @@ bot.once('spawn', () => {
         if (req.body.message !== "undefined") {
             bot.chat(req.body.message.toString())
         }
-        res.send(`<a href="http://localhost:${botport}">go back</a>`);
+        res.send(`<a href="http://localhost:${5000 + botport}">go back</a>`);
     });
-	http.listen(botport, function(){
+	http.listen(5000 + botport, function(){
 		// do nothing
 	});
 	bot.autoEat.options.priority = "foodPoints"
