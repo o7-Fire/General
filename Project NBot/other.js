@@ -145,7 +145,8 @@ bot.once('spawn', () => {
 
 	app.get ('/', function(req, res){
 		res.send(`
-            Bot Name: ${args[0]}<br/><br/>
+            Bot Name: ${args[0]}<br/>
+            Bot Position: ${bot.entity.position.toString()}<br/><br/>
             All online players: ${Object.keys(bot.players).join(", ")}<br/><br/>
             <form method="post">
                 <label for="sdrcawtcast">Bot say (text):</label>
@@ -155,9 +156,13 @@ bot.once('spawn', () => {
                 <label for="dvrygsdrvry">Goto (playername):</label>
                 <input type="text" id="dvrygsdrvry" name="navigate">
             </form>
+            <form method="post">
+                <label for="svtretyrevyt">Goto (x) (y) (z):</label>
+                <input type="text" id="svtretyrevyt" name="gotoxyz">
+            </form>
             Go to <a href="http://localhost:${5000 + botport}/inventory">here</a> to see the bot inventory<br/>
-            Go to <a href="http://localhost:${5100 + botport}"here</a> to see prismarine viewer<br/>
-            Go to <a href="http://localhost:${5200 + botport}"here</a> to see bot inventory (images)<br/>
+            Go to <a href="http://localhost:${5100 + botport}">here</a> to see prismarine viewer<br/>
+            Go to <a href="http://localhost:${5200 + botport}">here</a> to see bot inventory (images)<br/>
 		`)
 	});
 	app.get('/inventory', function(req, res){
@@ -187,6 +192,13 @@ bot.once('spawn', () => {
             bot.pathfinder.setMovements(defaultMove)
             bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, 1))
             res.send(`Found player to navigate.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
+        }
+        if (req.body.gotoxyz) {
+            var xyz = req.body.gotoxyz.split(" ")
+            bot.pathfinder.stop()
+            bot.pathfinder.setMovements(defaultMove)
+            bot.pathfinder.setGoal(new GoalNear(xyz[0], xyz[1], xyz[2], 1))
+            res.send(`Navigating to the specified route.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
         }
     });
 	http.listen(5000 + botport, function(){
