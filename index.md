@@ -1,2 +1,2 @@
-- [Project Status](Project%20Status/README.md)
-- [Project TenorGif](Project%20TenorGif/README.md)
+- [Project Status](Project%20Status/)
+- [Project TenorGif](Project%20TenorGif/)
