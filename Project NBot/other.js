@@ -146,9 +146,14 @@ bot.once('spawn', () => {
 	app.get ('/', function(req, res){
 		res.send(`
             Bot Name: ${args[0]}<br/><br/>
+            All online players: ${Object.keys(bot.players).join(", ")}<br/><br/>
             <form method="post">
-              <label for="fsay">Bot say:</label>
-              <input type="text" id="fsay" name="message">
+                <label for="sdrcawtcast">Bot say (text):</label>
+                <input type="text" id="sdrcawtcast" name="message">
+            </form>
+            <form method="post">
+                <label for="dvrygsdrvry">Goto (playername):</label>
+                <input type="text" id="dvrygsdrvry" name="navigate">
             </form>
             Go to <a href="http://localhost:${5000 + botport}/inventory">here</a> to see the bot inventory<br/>
             Go to <a href="http://localhost:${5100 + botport}"here</a> to see prismarine viewer<br/>
@@ -166,10 +171,23 @@ bot.once('spawn', () => {
 
     app.post('/', (req, res) => {
         console.log(req.body);
-        if (req.body.message !== "undefined") {
+        if (req.body.message) {
             bot.chat(req.body.message.toString())
+            res.send(`<a href="http://localhost:${5000 + botport}">go back</a>`);
         }
-        res.send(`<a href="http://localhost:${5000 + botport}">go back</a>`);
+        if (req.body.navigate) {
+            const target = bot.players[req.body.navigate].entity
+            if (!target) {
+                res.send(`Cannot see the player to navigate.<br/><a href="http://localhost:${5000 + botport}">go back</a>`)
+                return
+            }
+            bot.pathfinder.stop()
+            const { x: playerX, y: playerY, z: playerZ } = target.position
+
+            bot.pathfinder.setMovements(defaultMove)
+            bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, 1))
+            res.send(`Found player to navigate.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
+        }
     });
 	http.listen(5000 + botport, function(){
 		// do nothing
