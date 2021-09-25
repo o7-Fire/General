@@ -9,6 +9,7 @@ const navigatePlugin = require('mineflayer-navigate')(mineflayer);
 var bloodhoundPlugin = require('mineflayer-bloodhound')(mineflayer);
 const armorManager = require('mineflayer-armor-manager')
 const autoeat = require("mineflayer-auto-eat")
+const AutoAuth = require('mineflayer-auto-auth')
 var blockFinderPlugin = require('mineflayer-blockfinder')(mineflayer);
 //const {autoCrystal} = require('mineflayer-autocrystal')
 const pvp = require('mineflayer-pvp').plugin
@@ -64,6 +65,8 @@ const bot = mineflayer.createBot({
   host: 'testing2b.aternos.me',
   username: (args[0]),
   version: '1.16.5',
+   plugins: [AutoAuth],
+  AutoAuth: 'shitfuck'
   //port: 49884
 })
 
