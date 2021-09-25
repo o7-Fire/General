@@ -126,15 +126,23 @@ bot.once('spawn', () => {
 
 	app.get ('/', function(req, res){
 		res.send(`Bot Name: ${args[0]}<br/><br/>
-		Go to localhost:${botport.toString()}/inventory to see the bot inventory`)
+		<form method="post">
+          <label for="fsay">Bot say:</label>
+          <input type="text" id="fsay" name="message">
+        </form>
+		Go to <a href="http://localhost:${botport}/inventory">here</a> to see the bot inventory`)
 	});
 	app.get('/inventory', function(req, res){
+	    //res.send(`ok`)
         res.send(`Bot Name: ${args[0]}<br/><br/>Inventory: amount name (id) : slotnumber<br/><br/>${inventory}`)
     });
 
     app.post('/', (req, res) => {
-        console.log(req.body.name);
-        res.send(`username: ${req.body.name}`);
+        console.log(req.body);
+        if (req.body.message !== "undefined") {
+            bot.chat(req.body.message.toString())
+        }
+        res.send(`<a href="http://localhost:${botport}">go back</a>`);
     });
 	http.listen(botport, function(){
 		// do nothing
