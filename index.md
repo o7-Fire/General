@@ -1,2 +1,3 @@
 - [Project Status](Project%20Status/)
-- [Project TenorGif](Project%20TenorGif/)
+- [Project Tenor Gif](Project%20TenorGif/)
+- [Project Print Src](Project%20PrntSc/)
