@@ -77,6 +77,7 @@ var pi = 3.14159;
 var isRoamingEnabled = false
 var isAutototemEnabled = false
 var isAutoFishingEnabled = false
+var isMiningEnabled = false
 var others = {}
 var friendly = {}
 var uselessvar = 0
@@ -100,15 +101,38 @@ let mcAssets = require('minecraft-assets')(bot.version)
 
 const defaultMove = new Movements(bot, mcData)
 
-/*
-bot.once('spawn', () => {
-  mineflayerViewer(bot, { port: 8090, firstPerson: true }) // port is the minecraft server port, if first person is false, you get a bird's-eye view
-})
-*/
-
-/*
-curl -i -X POST -H "Content-Type: application/json" -d "{\"name\":\"Nexity\"}" http://localhost:5001/
-*/
+function trymine(idoftheblock) {
+    if (isMiningEnabled) {
+        bot.findBlock({
+            point: bot.entity.position,
+            matching: idoftheblock,
+            maxDistance: 256,
+            count: 15,
+        }, function(err, blocks) {
+            if (err) {
+                // do nothing
+            }
+            if (blocks.length) {
+                var block = blocks[Math.floor(Math.random()*blocks.length)]
+                bot.pathfinder.stop()
+                bot.pathfinder.setMovements(defaultMove)
+                bot.pathfinder.setGoal(new GoalNear(block.position.x, block.position.y-1, block.position.z, 0))
+                function trymine2() {
+                    setTimeout(function() {
+                        if (bot.blockAt(new vec3(block.position.x, block.position.y, block.position.z)).name !== "air") {
+                            trymine2()
+                        } else {
+                            trymine(idoftheblock)
+                        }
+                    }, 100)
+                }
+                trymine2()
+            } else {
+                // do nothing
+            }
+        });
+    }
+}
 
 bot.once('spawn', () => {
     var botport = Number.parseInt(args[0].replace(botprefix, ""))
@@ -128,11 +152,6 @@ bot.once('spawn', () => {
     })
 
     // mainframe
-	var inventory = ""
-	Object.entries(bot.inventory.items()).forEach(([k,v]) => {
-		inventory = inventory + `${v.count} ${v.name} (${v.type}) : ${v.slot}<br/>`
-	})
-
 	const app = express();
 	var http = require('http').Server(app);
     var io = require('socket.io')(http);
@@ -145,6 +164,7 @@ bot.once('spawn', () => {
 
 	app.get ('/', function(req, res){
 		res.send(`
+		    <body style="background-color:darkgray">
             Bot Name: ${args[0]}<br/>
             Bot Position: ${bot.entity.position.toString()}<br/><br/>
             All online players: ${Object.keys(bot.players).join(", ")}<br/><br/>
@@ -160,19 +180,22 @@ bot.once('spawn', () => {
                 <label for="svtretyrevyt">Goto (x) (y) (z):</label>
                 <input type="text" id="svtretyrevyt" name="gotoxyz">
             </form>
-            Go to <a href="http://localhost:${5000 + botport}/inventory">here</a> to see the bot inventory<br/>
+            <form method="post">
+                <label for="ertsrvegdsrgv">Mine (block_name) / (stop):</label>
+                <input type="text" id="ertsrvegdsrgv" name="mine">
+            </form>
+            <form method="post">
+                <label for="cvbnvbcnbvc">Attack (playername):</label>
+                <input type="text" id="cvbnvbcnbvc" name="attack">
+            </form>
+            <form method="post">
+                <label for="fdgdfgryretdfg">Drop item (itemname) (amount):</label>
+                <input type="text" id="fdgdfgryretdfg" name="drop">
+            </form>
             Go to <a href="http://localhost:${5100 + botport}">here</a> to see prismarine viewer<br/>
             Go to <a href="http://localhost:${5200 + botport}">here</a> to see bot inventory (images)<br/>
 		`)
 	});
-	app.get('/inventory', function(req, res){
-	    //res.send(`ok`)
-        res.send(`
-            Bot Name: ${args[0]}<br/>
-            <a href="http://localhost:${5000 + botport}">go back</a><br/><br/>
-            Inventory: amount name (id) : slotnumber<br/><br/>${inventory}
-        `)
-    });
 
     app.post('/', (req, res) => {
         console.log(req.body);
@@ -199,6 +222,37 @@ bot.once('spawn', () => {
             bot.pathfinder.setMovements(defaultMove)
             bot.pathfinder.setGoal(new GoalNear(xyz[0], xyz[1], xyz[2], 1))
             res.send(`Navigating to the specified route.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
+        }
+        if (req.body.mine) {
+            if (req.body.mine == "stop") {
+                isMiningEnabled = false
+                res.send(`Stopped mining.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
+            } else {
+                var theid = mcData[itemsByName][req.body.mine.toString()].id
+                trymine(theid)
+                res.send(`Started mining.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
+            }
+        }
+        if (req.body.attack) {
+            try {
+                bot.pvp.attack(bot.players[req.body.attack.toString()].entity)
+                res.send(`Started attacking.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
+            } catch (error) {
+                res.send(`Could not find the person to attack.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
+            }
+        }
+        if (req.body.drop) {
+            try {
+                bot.toss(mcData[itemsByName][req.body.drop.split(" ")[0]].id, null, req.body.drop.split(" ")[1], (err) => {
+                    if (err) {
+                        // do nothing
+                    } else {
+                        res.send(`Threw the item.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
+                    }
+                })
+            } catch (error) {
+                res.send(`unable to find block.<br/><a href="http://localhost:${5000 + botport}">go back</a>`);
+            }
         }
     });
 	http.listen(5000 + botport, function(){
@@ -756,40 +810,10 @@ bot.on('chat', (username, message) => {
 	}
 
 	if (message.startsWith("bot mine ")) {
+	    isMiningEnabled = true
 		var blocktomine = message.replace("bot mine ", "")
 		var theid = mcData[itemsByName][blocktomine].id
-		console.log(theid)
-		function trymine() {
-			bot.findBlock({
-				point: bot.entity.position,
-				matching: theid,
-				maxDistance: 256,
-				count: 15,
-			}, function(err, blocks) {
-				if (err) {
-					bot.chat('Error trying to mine: ' + err);
-				}
-				if (blocks.length) {
-					var block = blocks[Math.floor(Math.random()*blocks.length)]
-					bot.pathfinder.stop()
-					bot.pathfinder.setMovements(defaultMove)
-					bot.pathfinder.setGoal(new GoalNear(block.position.x, block.position.y-1, block.position.z, 0))
-					function trymine2() {
-						setTimeout(function() {
-							if (bot.blockAt(new vec3(block.position.x, block.position.y, block.position.z)).name !== "air") {
-								trymine2()
-							} else {
-								trymine()
-							}
-						}, 100)
-					}
-					trymine2()
-				} else {
-					console.log("found none")
-				}
-			});
-		}
-		trymine()
+		trymine(theid)
 	}
 
 })
