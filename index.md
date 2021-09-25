@@ -1,2 +1,2 @@
-- [Project Status](https://github.com/o7-Fire/General/blob/master/Project%20Status/README.md)
-- [Project TenorGif](https://github.com/o7-Fire/General/blob/master/Project%20TenorGif/README.md)
+- [Project Status](Project%20Status/README.md)
+- [Project TenorGif](Project%20TenorGif/README.md)
