@@ -1,7 +1,6 @@
 const mineflayer = require('mineflayer')
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var express = require('express');
+const bodyParser = require('body-parser');
 const fs = require('fs')
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
 const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathfinder')
@@ -64,7 +63,7 @@ const bot = mineflayer.createBot({
   host: 'testing2b.aternos.me',
   username: (args[0]),
   version: '1.16.5',
-  //port: 49884
+  port: 49884
 })
 
 var botprefix = "NBot" // change this to something else if you want to change the name in main.py
@@ -88,7 +87,7 @@ if (bot.supportFeature('itemsAreNotBlocks')) {
 } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
 	itemsByName = 'blocksByName'
 }
-		
+
 navigatePlugin(bot);
 bot.loadPlugins([armorManager, pathfinder, autoeat, pvp, blockFinderPlugin]);
 //bot.loadPlugin(autoCrystal)
@@ -104,16 +103,40 @@ bot.once('spawn', () => {
 })
 */
 
+/*
+curl -i -X POST -H "Content-Type: application/json" -d "{\"name\":\"Nexity\"}" http://localhost:5001/
+*/
+
 bot.once('spawn', () => {
 	var inventory = ""
-	Object.entries(bot.inventory.items()).forEach(([k,v]) => { 
-		inventory = inventory + `${v.count} ${v.name} (${v.type}) : ${v.slot}<br/>` 
+	var botport = 5000 + Number.parseInt(args[0].replace(botprefix, ""))
+	Object.entries(bot.inventory.items()).forEach(([k,v]) => {
+		inventory = inventory + `${v.count} ${v.name} (${v.type}) : ${v.slot}<br/>`
 	})
-	
+
+	const app = express();
+	var http = require('http').Server(app);
+    var io = require('socket.io')(http);
+	// Parse URL-encoded bodies (as sent by HTML forms)
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+    // Parse JSON bodies (as sent by API clients)
+    app.use(express.json());
+
 	app.get ('/', function(req, res){
-		res.send(`Bot Name: ${args[0]}<br/><br/>Inventory: amount name (id) : slotnumber<br/><br/>${inventory}`)
+		res.send(`Bot Name: ${args[0]}<br/><br/>
+		Go to localhost:${botport.toString()}/inventory to see the bot inventory`)
 	});
-	http.listen(5000 + Number.parseInt(args[0].replace(botprefix, "")), function(){
+	app.get('/inventory', function(req, res){
+        res.send(`Bot Name: ${args[0]}<br/><br/>Inventory: amount name (id) : slotnumber<br/><br/>${inventory}`)
+    });
+
+    app.post('/', (req, res) => {
+        console.log(req.body.name);
+        res.send(`username: ${req.body.name}`);
+    });
+	http.listen(botport, function(){
 		// do nothing
 	});
 	bot.autoEat.options.priority = "foodPoints"
@@ -122,16 +145,33 @@ bot.once('spawn', () => {
 	bot.chat("/login " + botpassword)
 })
 
+//quarry(2, 3, 200, 12, 3, 210)
+// quarry(-232, 1, 234, -200, 3, 250)
 function quarry(x1, y1, z1, x2, y2, z2){
-	for (var newy = y1; newy < y2; newy++) {
-		for (var newx = x1; newx < x2; newx++) {
-			for (var newz = z1; newz < z2; newz++) {
-				if (bot.canDigBlock(bot.blockAt(new vec3(newx, newy, newz)))) {
-					bot.pathfinder.stop()
-					bot.pathfinder.setMovements(defaultMove)
-					bot.pathfinder.setGoal(new GoalNear(newx, newy, newz, 2))
-					bot.dig(bot.blockAt(new vec3(newx, newy, newz)))
-				}
+	for (var newy = y1; newy <= y2; newy++) {
+		for (var newx = x1; newx <= x2; newx++) {
+			for (var newz = z1; newz <= z2; newz++) {
+			    function trymine() {
+			        setTimeout(function() {
+                        var theblock = bot.blockAt(new vec3(newx, newy, newz))
+                        if (theblock.name !== "air") {
+                            bot.pathfinder.stop()
+                            bot.pathfinder.setMovements(defaultMove)
+                            bot.pathfinder.setGoal(new GoalNear(newx, newy-1, newz, 0))
+                            function trymine2() {
+                                setTimeout(function() {
+                                    if (theblock.name !== "air") {
+                                        trymine2()
+                                    } else {
+                                        trymine()
+                                    }
+                                }, 100)
+                            }
+                            trymine2()
+                        }
+                    }, 100)
+                }
+                trymine()
 			}
 		}
 	}
@@ -341,7 +381,7 @@ function autototem() {
 		var arrayLength = items.length;
 		for (var i = 0; i < arrayLength; i++) {
 			var theitem = items[i]
-			if (theitem.name === "totem_of_undying") { 
+			if (theitem.name === "totem_of_undying") {
 				ifhas = 1
 			}
 		}
@@ -364,7 +404,7 @@ function autototem() {
 setTimeout(function() { autototem() }, 5000)
 
 bot.on('physicTick', () => {
-	
+
 	if (isRoamingEnabled) {
 		if (bot.time.time - uselessvar2 > 80) {
 			uselessvar2 = bot.time.time
@@ -375,7 +415,7 @@ bot.on('physicTick', () => {
 		}
 	}
 })
-	
+
 setTimeout(function() {
 	bot.on('physicTick', () => {
 		var friendly2 = {}
@@ -418,7 +458,7 @@ setTimeout(function() {
 								bot.pathfinder.setMovements(defaultMove)
 								bot.pathfinder.setGoal(new GoalNear(botpos.x - 4, botpos.y, botpos.z - 4, 1))
 							}
-						} else { 
+						} else {
 							var posX = thevpos.x.toFixed() - botpos.x.toFixed()
 							var posZ = botpos.z.toFixed() - thevpos.z.toFixed()
 							console.log(`${k} : ${posX} -${posZ}`)
@@ -489,7 +529,7 @@ bot.on('chat', (username, message) => {
 	if (message.startsWith("say")) {
 		bot.chat(message.replace("say ", ""))
 	}
-	
+
 	if (message.startsWith("bot comexyz ")) {
 		const thename = message.split(" ")[2]
 		const x = message.split(" ")[3]
@@ -501,7 +541,7 @@ bot.on('chat', (username, message) => {
 			bot.pathfinder.setGoal(new GoalNear(x, y, z, 1))
 		}
 	}
-	
+
 	if (message.startsWith("bot come ")) {
 		const thename = message.split("bot come ")[1]
 		if (thename === bot.username || thename === "all") {
@@ -517,7 +557,7 @@ bot.on('chat', (username, message) => {
 			bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, 1))
 		}
 	}
-	
+
 	if (message.startsWith("eval ")) {
 		var thecode = message.replace("eval ", "")
 		try {
@@ -526,23 +566,23 @@ bot.on('chat', (username, message) => {
 			bot.chat(error.toString())
 		}
 	}
-	
+
 	if (message === "equiparmor") {
 		bot.armorManager.equipAll()
 	}
-	
+
 	if (message.startsWith("botneedhelp ") && username.startsWith(botprefix)) {
 		var allypos = message.split(" ")
 		bot.pathfinder.stop()
 		bot.pathfinder.setMovements(defaultMove)
 		bot.pathfinder.setGoal(new GoalNear(allypos[1], allypos[2], allypos[3], 10))
 	}
-	
+
 	if (message === "zxc") {
 		var fmessage = `Visible: `
 		Object.entries(bot.players).forEach(([k,v]) => {
 			try {
-				var thevec3 = `${v.entity.position.x.toFixed()} ${v.entity.position.y.toFixed()} ${v.entity.position.z.toFixed()}`  
+				var thevec3 = `${v.entity.position.x.toFixed()} ${v.entity.position.y.toFixed()} ${v.entity.position.z.toFixed()}`
 				fmessage = fmessage + `${k} at ${thevec3}, `
 			} catch (error) {
 				// do nothing
@@ -550,7 +590,7 @@ bot.on('chat', (username, message) => {
 		})
 		bot.chat(fmessage)
 	}
-	
+
 	if (message === "bot roam") {
 		if (isRoamingEnabled) {
 			bot.chat("stopped roaming")
@@ -560,7 +600,7 @@ bot.on('chat', (username, message) => {
 			isRoamingEnabled = true
 		}
 	}
-	
+
 	if (message === "bot autototem") {
 		if (isAutototemEnabled) {
 			bot.chat("disabled auto-totem")
@@ -570,7 +610,7 @@ bot.on('chat', (username, message) => {
 			isAutototemEnabled = true
 		}
 	}
-	
+
 	if (message === "bot autofish") {
 		if (isAutoFishingEnabled) {
 			bot.chat("disabled auto-fish")
@@ -580,7 +620,7 @@ bot.on('chat', (username, message) => {
 			isAutoFishingEnabled = true
 		}
 	}
-	
+
 	if (message.startsWith("bot attack ")) {
 		try {
 			bot.pvp.attack(bot.players[message.split("bot attack ")[1]].entity)
@@ -588,7 +628,7 @@ bot.on('chat', (username, message) => {
 			bot.chat("Could not find person")
 		}
 	}
-	
+
 	if (message === "line up") {
 		const target = bot.players[username].entity
 		if (!target) {
@@ -600,7 +640,7 @@ bot.on('chat', (username, message) => {
 		bot.pathfinder.setMovements(defaultMove)
 		bot.pathfinder.setGoal(new GoalNear(playerX + Number.parseInt(args[0].replace(botprefix, "")), playerY, playerZ, RANGE_GOAL))
 	}
-	
+
 	if (message.startsWith("equipblock ")) {
 		var blocktoequip = message.replace("equipblock ", "");
 		bot.equip(mcData[itemsByName][blocktoequip].id, 'hand', (err) => {
@@ -611,7 +651,7 @@ bot.on('chat', (username, message) => {
 			}
 		})
 	}
-	
+
 	if (message.startsWith("throwblock ")) {
 		var args = message.split(" ");
 		try {
@@ -626,7 +666,7 @@ bot.on('chat', (username, message) => {
 			bot.chat("unable to find block / not enough arguments")
 		}
 	}
-	
+
 	if (message.startsWith("abuild ")) {
 		const messagesplit = message.split(" ") // below, 0 -1 1
 		const referenceBlock = bot.blockAt(bot.entity.position.offset(messagesplit[1], messagesplit[2], messagesplit[3]))
@@ -639,7 +679,7 @@ bot.on('chat', (username, message) => {
 			})
 		}
 	}
-	
+
 	if (message === "tellinventory") {
 		items = bot.inventory.items()
 		const output = items.map(itemToString).join(', ')
@@ -649,7 +689,7 @@ bot.on('chat', (username, message) => {
 			bot.chat('empty')
 		}
 	}
-	
+
 	if (message.startsWith("bot mine ")) {
 		var blocktomine = message.replace("bot mine ", "")
 		var theid = mcData[itemsByName][blocktomine].id
