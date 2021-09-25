@@ -69,6 +69,7 @@ const bot = mineflayer.createBot({
 
 var botprefix = "NBot" // change this to something else if you want to change the name in main.py
 var botowner = "Nexity" // to prevent people hijacking your bot
+var botpassword = "shitfuck" // for servers with authme / authentication
 const mcData = require('minecraft-data')(bot.version)
 var pi = 3.14159;
 var isRoamingEnabled = false
@@ -118,6 +119,7 @@ bot.once('spawn', () => {
 	bot.autoEat.options.priority = "foodPoints"
 	bot.autoEat.options.bannedFood = []
 	bot.autoEat.options.eatingTimeout = 3
+	bot.chat("/login " + botpassword)
 })
 
 function quarry(x1, y1, z1, x2, y2, z2){
