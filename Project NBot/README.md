@@ -28,7 +28,7 @@ https://www.youtube.com/watch?v=AYIcSEGx2EY
 
 # Commands
 all commands are only runnable by the botowner name\
-\
+You can also control the bot on https://localhost:5001 - https://localhost:5099 (meaning max 99 bots)\
 command (args1) = required arguments\
 command {args1} = not required but allowed\
 \
