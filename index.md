@@ -1,3 +1,6 @@
 - [Project Status](Project%20Status/)
 - [Project Tenor Gif](Project%20TenorGif/)
 - [Project Print Src](Project%20PrntSc/)
+- [Project Nbot](Project%20NBot/)
+- [Project DSC](Project%20DSC/)
+- [Project DI](Porject%20DI/)
