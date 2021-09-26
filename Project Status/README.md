@@ -23,3 +23,7 @@ for when you hate everyone equally
 ![image](https://user-images.githubusercontent.com/49940811/134803542-2ae72c8b-69ef-4268-a6ee-57e77b6c7a40.png)
 
 ![image](https://user-images.githubusercontent.com/49940811/134803520-b3a88ce5-8fd8-4c6e-9de0-5e7c446931f3.png)
+
+## [sayingFuckInEveryLanguage.js](sayingFuckInEveryLanguage.js)
+
+the name is self explanatory
