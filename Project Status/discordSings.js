@@ -1,7 +1,7 @@
 // noinspection DuplicatedCode
 
 const axios = require('axios');
-const HTMLParser = require('node-html-parser');
+
 const headers = {
     "accept": "*/*",
     "authorization": process.env.TOKEN || "OR YOUR TOKEN",
