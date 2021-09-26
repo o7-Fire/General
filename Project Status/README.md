@@ -15,3 +15,11 @@ can be used in non offending way
 ## [discordSings.js](discordSings.js)
 
 ![image](https://user-images.githubusercontent.com/49940811/134803101-16c9c300-08a8-467b-87c7-e2bb7a4acc93.png)
+
+## [fuckCountry.js](fuckCountry.js)
+
+for when you hate everyone equally
+
+![image](https://user-images.githubusercontent.com/49940811/134803542-2ae72c8b-69ef-4268-a6ee-57e77b6c7a40.png)
+
+![image](https://user-images.githubusercontent.com/49940811/134803520-b3a88ce5-8fd8-4c6e-9de0-5e7c446931f3.png)
