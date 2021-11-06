@@ -21,14 +21,18 @@ def write():
 	global finaltosend
 	while True:
 		time.sleep(5)
+		totallines = 0
+		for i in finaltosend.split("\n"):
+			totallines += 1
 		with open('result.csv', mode='a') as f:
 			f.write(finaltosend)
 		finaltosend = ""
+		print("wrote: " + str(totallines))
 
 t1 = threading.Thread(target=write)
 t1.start()
 	
-for abasrbaebwa in range(3000):
+for abasrbaebwa in range(5000):
 	def newthread(threadcxount):
 		global finaltosend
 		while True:
@@ -60,7 +64,7 @@ for abasrbaebwa in range(3000):
 						bhdfbh = ther["data"]
 						didratelimit = False
 					except:
-						print("ratelimited")
+						#print("ratelimited")
 						time.sleep(30)
 						
 					if didratelimit == False:
@@ -73,7 +77,7 @@ for abasrbaebwa in range(3000):
 							if cantry:
 								finaltosend += f"\n{d['targetId']},{d['imageUrl']}"
 								#write([d['targetId'], d['imageUrl']])
-						print("done " + userids2)
+						#print("done " + userids2)
 			except:
 				#print("request failed")
 				dryugbsre5uyn = 0
