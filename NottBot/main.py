@@ -2,15 +2,22 @@ import time
 import threading
 import requests
 import random
+import csv
 
 min = 0
 max = 2900000000 #latest account 2.9 bil
 headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0' }
 with open("proxies.txt", "r") as proxyx:
 	proxies = proxyx.read().split("\n")
+
+def write(message):
+	with open('result.csv', mode='a') as f:
+		writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		writer.writerow(message)
 	
 for abasrbaebwa in range(100):
 	def newthread(threadcxount):
+		
 		while True:
 			https_proxy = random.choice(proxies)
 			
@@ -18,7 +25,7 @@ for abasrbaebwa in range(100):
 			  "http"  : https_proxy,
 			  "https" : https_proxy
 			}
-			print("using " + str(https_proxy))
+			#print("using " + str(https_proxy))
 			
 			thenum = random.randint(min, max)
 			finalmessage = ""
@@ -49,9 +56,7 @@ for abasrbaebwa in range(100):
 						except:
 							cantry = False
 						if cantry:
-							finalmessage += f"{d['targetId']} {d['imageUrl']}\n"
-					with open("result.txt", "a") as f:
-						f.write(finalmessage)
+							write([d['targetId'], d['imageUrl']])
 
 	t1 = threading.Thread(target=newthread, args=(abasrbaebwa,))
 	t1.start()
