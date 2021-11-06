@@ -2,7 +2,6 @@ import time
 import threading
 import requests
 import random
-import csv
 from fake_headers import Headers
 
 header = Headers(
@@ -13,18 +12,25 @@ header = Headers(
 	    
 min = 0
 max = 29000000 #latest account 2.9 bil
+finaltosend = ""
 headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0' }
 with open("proxies.txt", "r") as proxyx:
 	proxies = proxyx.read().split("\n")
 
-def write(message):
-	with open('result.csv', mode='a') as f:
-		writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-		writer.writerow(message)
+def write():
+	global finaltosend
+	while True:
+		time.sleep(5)
+		with open('result.csv', mode='a') as f:
+			f.write(finaltosend)
+		finaltosend = ""
+
+t1 = threading.Thread(target=write)
+t1.start()
 	
-for abasrbaebwa in range(500):
+for abasrbaebwa in range(3000):
 	def newthread(threadcxount):
-		
+		global finaltosend
 		while True:
 			https_proxy = random.choice(proxies)
 			
@@ -65,10 +71,12 @@ for abasrbaebwa in range(500):
 							except:
 								cantry = False
 							if cantry:
-								write([d['targetId'], d['imageUrl']])
+								finaltosend += f"\n{d['targetId']},{d['imageUrl']}"
+								#write([d['targetId'], d['imageUrl']])
 						print("done " + userids2)
 			except:
-				print("request failed")
+				#print("request failed")
+				dryugbsre5uyn = 0
 
 	t1 = threading.Thread(target=newthread, args=(abasrbaebwa,))
 	t1.start()
