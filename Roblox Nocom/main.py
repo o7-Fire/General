@@ -14,7 +14,7 @@ headers = {
   "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
   "accept-language": "en-US,en;q=0.9",
   "cache-control": "max-age=0",
-  "sec-ch-ua": "\"Chromium\";v=\"94\", \"Google Chrome\";v=\"94\", \";Not A Brand\";v=\"99\"",
+  "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"96\", \"Google Chrome\";v=\"96\"",
   "sec-ch-ua-mobile": "?0",
   "sec-ch-ua-platform": "\"Windows\"",
   "sec-fetch-dest": "document",
@@ -50,7 +50,9 @@ async def on_message(message):
       await message.channel.send(f"total servers: {r['TotalCollectionSize']}\ntime taken: {time.time() - starttime}s")
 
   if message.content.startswith("getserver"):
-    if message.content == "getserver":
+    if message.content.startswith("getservers"):
+      return
+    if message.content == "getserver" or len(message.content.split(" ")) <= 1:
       await message.channel.send("usage: getserver [placeId] [serverNumber]")
     else:
       id = message.content.split(" ")[1]
@@ -63,7 +65,7 @@ async def on_message(message):
       for server in r["Collection"]:
         loop += 1
         s = server
-        finalmessage += f"Server {loop}: Ping {s['Ping']}, Players {s['PlayersCapacity']}, Slow Server {s['ShowSlowGameMessage']}, GUID {s['Guid']}\n"
+        finalmessage += f"Server {loop}: Ping {s['Ping']}ms, Players {s['PlayersCapacity']}, Slow Server={s['ShowSlowGameMessage']}, GUID {s['Guid']}\n"
       await message.channel.send(f"```{finalmessage}```")
 
 
