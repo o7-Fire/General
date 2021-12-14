@@ -5,7 +5,7 @@ import hcaptcha
 import sys
 from PIL import Image
 
-TOKEN = "OTE4NDkxMDYzOTEwNTU1NjU4.YbIBdg.qNRcMxU3YJWePNkm4mQI8yhOdgE"
+TOKEN = ""
 client = discord.Client()
 
 
