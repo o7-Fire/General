@@ -6,8 +6,6 @@ import string
 import random
 
 header = Headers(
-        browser="chrome",  # Generate only Chrome UA
-        os="win",  # Generate ony Windows platform
         headers=True  # generate misc headers
     )
 
