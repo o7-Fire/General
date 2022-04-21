@@ -1,6 +1,8 @@
-# TODO 
-\
+# NBot
+
 minecraft hivemind bot that if one person gets attacked, they will attack back in numbers
+
+# TODO 
 \
 lumberjack command
 \
