@@ -15,7 +15,6 @@ const inventoryViewer = require('mineflayer-web-inventory')
 const pvp = require('mineflayer-pvp').plugin
 
 var sleep = require('sleep');
-const { Vec3 } = require('vec3')
 const vec3 = require('vec3')
 var args = process.argv.slice(2);
 
@@ -348,20 +347,6 @@ function theautofish() {
 }
 theautofish()
 
-
-  bot.once('spawn', function () {
-  setInterval(() => {
-    const entity = bot.nearestEntity()
-    if (entity !== null) {
-      if (entity.type === 'player') {
-        bot.lookAt(entity.position.offset(0, 1.6, 0))
-      } else if (entity.type === 'mob') {
-        bot.lookAt(entity.position)
-      }
-    }
-  }, 50)
-})
-
 function showVillagers () {
 	const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === mcData.entitiesByName.villager.id)
 	const closeVillagersId = villagers.filter(e => bot.entity.position.distanceTo(e.position) < 3).map(e => e.id)
@@ -663,6 +648,7 @@ bot.on('chat', (username, message) => {
 	if (message.startsWith("say")) {
 		bot.chat(message.replace("say ", ""))
 	}
+
 	if (message.startsWith("bot comexyz ")) {
 		const thename = message.split(" ")[2]
 		const x = message.split(" ")[3]
@@ -761,6 +747,7 @@ bot.on('chat', (username, message) => {
 			bot.chat("Could not find person")
 		}
 	}
+
 	if (message === "line up") {
 		const target = bot.players[username].entity
 		if (!target) {
@@ -772,6 +759,7 @@ bot.on('chat', (username, message) => {
 		bot.pathfinder.setMovements(defaultMove)
 		bot.pathfinder.setGoal(new GoalNear(playerX + Number.parseInt(args[0].replace(botprefix, "")), playerY, playerZ, RANGE_GOAL))
 	}
+
 	if (message.startsWith("equipblock ")) {
 		var blocktoequip = message.replace("equipblock ", "");
 		bot.equip(mcData[itemsByName][blocktoequip].id, 'hand', (err) => {
